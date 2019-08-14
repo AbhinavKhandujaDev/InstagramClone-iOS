@@ -25,7 +25,7 @@ class HomeFeedViewController: UIViewController {
         configureNavBar()
         feedCollView.register(UINib(nibName: "HomeFeedCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: feedCellIdentifier)
         fetchPosts()
-        updateUserFeeds()
+//        updateUserFeeds()
     }
     
     fileprivate func configureNavBar() {
@@ -54,15 +54,17 @@ class HomeFeedViewController: UIViewController {
         }
     }
     
-    fileprivate func updateUserFeeds() {
-        guard let currentUser = loggedInUid else { return }
-        dbRef.child("user-following").child(currentUser).observe(.childAdded) { (snapshot) in
-            let followingUser = snapshot.key
-            dbRef.child("user-posts").child(followingUser).observe(.childAdded, with: { (ss) in
-                print("ss is: ",ss)
-            })
-        }
-    }
+//    fileprivate func updateUserFeeds() {
+//        guard let currentUser = loggedInUid else { return }
+//        dbRef.child("user-following").child(currentUser).observe(.childAdded) { (snapshot) in
+//            let followingUser = snapshot.key
+//            dbRef.child("user-posts").child(followingUser).observeSingleEvent(of: .value, with: { (ss) in
+//                if let ss = ss.value {
+//                    self.fetchPosts()
+//                }
+//            })
+//        }
+//    }
     
     @objc fileprivate func logout() {
         let alert = UIAlertController(title: "Are you sure?", message: nil, preferredStyle: .actionSheet)

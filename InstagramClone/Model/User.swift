@@ -45,6 +45,7 @@ class User {
                 return
             }
             dbRef.child(FollowUnfollow.follower.rawValue).child(searchedUid).updateChildValues([loggedInUid : 1]) { (error,ref) in
+                self?.addPosts(followedUser: searchedUid, loggedInUser: loggedInUid)
                 self?.isFollowed = true
                 completion(true)
             }
@@ -60,6 +61,7 @@ class User {
                 return
             }
             dbRef.child(FollowUnfollow.follower.rawValue).child(searchedUid).child(loggedInUid).removeValue(completionBlock: { (error, ref) in
+                self?.removePosts(followedUser: searchedUid, loggedInUser: loggedInUid)
                 self?.isFollowed = false
                 completion(true)
             })
@@ -76,6 +78,22 @@ class User {
                 self.isFollowed = false
             }
             completion(self.isFollowed)
+        }
+    }
+    
+    private func addPosts(followedUser: String, loggedInUser: String) {
+        dbRef.child("user-posts").child(followedUser).observeSingleEvent(of: .value) { (snapshot) in
+            guard let dict = snapshot.value as? [String:Any] else {return}
+            userFeedRef.child(loggedInUser).updateChildValues(dict)
+        }
+    }
+    
+    private func removePosts(followedUser: String, loggedInUser: String) {
+        dbRef.child("user-posts").child(followedUser).observeSingleEvent(of: .value) { (snapshot) in
+            guard let dict = snapshot.value as? [String:Any] else {return}
+            for key in dict.keys {
+                userFeedRef.child(loggedInUser).child(key).removeValue()
+            }
         }
     }
 }
