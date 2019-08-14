@@ -1,0 +1,81 @@
+//
+//  Profile.swift
+//  InstagramClone
+//
+//  Created by abhinav khanduja on 03/08/19.
+//  Copyright © 2019 abhinav khanduja. All rights reserved.
+//
+
+import Foundation
+import Firebase
+
+class User {
+    var name: String?
+    var username : String?
+    var profileImageUrl : String?
+    var uid : String?
+    var isFollowed : Bool = false
+    
+    enum FollowUnfollow : String {
+        case following = "user-following"
+        case follower = "user-follower"
+    }
+    
+    init(uid: String, details: [String:AnyObject]) {
+        self.uid = uid
+        
+        if let username = details["username"] as? String {
+            self.username = username
+        }
+        if let name = details["name"] as? String {
+            self.name = name
+        }
+        if let profileImageUrl = details["profileImageUrl"] as? String {
+            self.profileImageUrl = profileImageUrl
+        }
+    }
+    
+    func follow(completion: @escaping ((Bool)->())) {
+        guard let loggedInUid = loggedInUid else { return }
+        guard let searchedUid = uid else {return}
+        
+        dbRef.child(FollowUnfollow.following.rawValue).child(loggedInUid).updateChildValues([searchedUid : 1]) { [weak self] (error, ref) in
+            if error != nil {
+                completion(false)
+                return
+            }
+            dbRef.child(FollowUnfollow.follower.rawValue).child(searchedUid).updateChildValues([loggedInUid : 1]) { (error,ref) in
+                self?.isFollowed = true
+                completion(true)
+            }
+        }
+    }
+    
+    func unfollow(completion: @escaping ((Bool)->())) {
+        guard let loggedInUid = loggedInUid else { return }
+        guard let searchedUid = uid else {return}
+        dbRef.child(FollowUnfollow.following.rawValue).child(loggedInUid).child(searchedUid).removeValue { [weak self] (error, ref) in
+            if error != nil {
+                completion(false)
+                return
+            }
+            dbRef.child(FollowUnfollow.follower.rawValue).child(searchedUid).child(loggedInUid).removeValue(completionBlock: { (error, ref) in
+                self?.isFollowed = false
+                completion(true)
+            })
+        }
+    }
+    
+    func checkIfFollowed(completion: @escaping ((Bool)->())) {
+        guard let loggedInUid = loggedInUid else { return }
+        guard let searchedUid = uid else {return}
+        dbRef.child(FollowUnfollow.following.rawValue).child(loggedInUid).observeSingleEvent(of: .value) { (snapshot) in
+            if snapshot.hasChild(searchedUid) {
+                self.isFollowed = true
+            }else {
+                self.isFollowed = false
+            }
+            completion(self.isFollowed)
+        }
+    }
+}
