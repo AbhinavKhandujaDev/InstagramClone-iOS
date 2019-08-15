@@ -25,7 +25,10 @@ class HomeFeedViewController: UIViewController {
         configureNavBar()
         feedCollView.register(UINib(nibName: "HomeFeedCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: feedCellIdentifier)
         fetchPosts()
-//        updateUserFeeds()
+        
+        let refreshCtrl = UIRefreshControl()
+        refreshCtrl.addTarget(self, action: #selector(handleRefresh), for: .valueChanged)
+        feedCollView.refreshControl = refreshCtrl
     }
     
     fileprivate func configureNavBar() {
@@ -35,6 +38,12 @@ class HomeFeedViewController: UIViewController {
         if !viewSinglePost {
             self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(logout))
         }
+    }
+    
+    @objc fileprivate func handleRefresh() {
+        feeds.removeAll(keepingCapacity: true)
+        fetchPosts()
+        feedCollView.reloadData()
     }
     
     fileprivate func fetchPosts() {
@@ -49,6 +58,7 @@ class HomeFeedViewController: UIViewController {
                 guard let post = post else{return}
                 self.feeds.append(post)
                 self.feeds.sort(by: {$0.createdAt > $1.createdAt})
+                self.feedCollView.refreshControl?.endRefreshing()
                 self.feedCollView.reloadData()
             })
         }
