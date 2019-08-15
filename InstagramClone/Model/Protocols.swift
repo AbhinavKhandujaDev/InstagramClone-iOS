@@ -24,4 +24,6 @@ protocol FeedCellDelegate {
     func handleOptionsTapped(for feedCell: HomeFeedCollectionViewCell)
     func handleLikeTapped(for feedCell: HomeFeedCollectionViewCell)
     func handleCommentTapped(for feedCell: HomeFeedCollectionViewCell)
+    func handleConfigureLikeButton(for feedCell: HomeFeedCollectionViewCell)
+    func handleShowLikes(for feedCell: HomeFeedCollectionViewCell)
 }

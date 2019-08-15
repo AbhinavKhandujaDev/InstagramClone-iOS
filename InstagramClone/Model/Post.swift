@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Firebase
 
 class Post {
     var caption : String!
@@ -15,6 +16,7 @@ class Post {
     var likes : Int!
     var ownerUid : String!
     var postId : String!
+    var didLike = false
     
     init(postId: String, dict : [String:Any]) {
         self.postId = postId
@@ -34,4 +36,47 @@ class Post {
             self.ownerUid = ownerUid
         }
     }
+    
+    func adjustLikes(addLike: Bool, completion: @escaping((Int)->())) {
+        guard let userId = loggedInUid else { return }
+        if addLike {
+            //update like from user-like structure
+            userLikesRef.child(userId).setValue([postId : 1]) { (error, ref) in
+                //update like from user-like structure
+                postLikesRef.child(self.postId).updateChildValues([userId : 1]) { (error, ref) in
+                    self.likes += 1
+                    self.didLike = true
+                    completion(self.likes)
+                    postRef.child(self.postId).updateChildValues(["likes" : self.likes])
+                }
+            }
+        }else {
+            
+            //remove like from user-like structure
+            userLikesRef.child(userId).child(postId).removeValue { (error, ref) in
+                
+                //remove like from post-like structure
+                postLikesRef.child(self.postId).child(userId).removeValue { (error, ref) in
+                    guard self.likes > 0 else {return}
+                    self.likes -= 1
+                    self.didLike = false
+                    completion(self.likes)
+                    postRef.child(self.postId).updateChildValues(["likes" : self.likes])
+                }
+            }
+        }
+    }
+    
+//    func checkForDidLike(completion: @escaping((Bool)->())) {
+//        guard let userId = loggedInUid else { return }
+//        userLikesRef.child(userId).observeSingleEvent(of: .value) { (snapshot) in
+//            if snapshot.hasChild(self.postId) {
+//                self.didLike = true
+//            }else {
+//                self.didLike = false
+//            }
+//            completion(self.didLike)
+//        }
+//    }
+    
 }

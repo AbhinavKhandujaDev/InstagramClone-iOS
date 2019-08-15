@@ -19,25 +19,55 @@ class FollowViewController: UIViewController {
     fileprivate var users = [User]()
     var uid : String?
     
-    var viewFollowers : Bool = false
-    var viewFollowing : Bool = false
+    enum ViewingMode: Int {
+        case following
+        case followers
+        case likes
+        
+        init(index: Int) {
+            switch index {
+            case 0:
+                self = .following
+            case 1:
+                self = .followers
+            case 2:
+                self = .likes
+            default:
+                self = .following
+            }
+        }
+    }
+    
+    var viewingMode : ViewingMode!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         followTableView.register(UINib(nibName: "SearchTableViewCell", bundle: nil), forCellReuseIdentifier: searchUserIdentifier)
         navigationItem.title = "Followers"
         
-        if viewFollowers {
-            navigationItem.title = "Followers"
-        }else {
-            navigationItem.title = "Following"
+        switch viewingMode {
+        case .followers?: navigationItem.title = "Followers"
+        case .following?: navigationItem.title = "Following"
+        case .likes?: navigationItem.title = "Likes"
+        default: break
         }
+        
         fetchUsers()
+        print(viewingMode.rawValue)
+    }
+    
+    fileprivate func getDatabaseReference() -> DatabaseReference? {
+        guard let mode = viewingMode else { return nil }
+        switch mode {
+        case .followers: return dbRef.child("user-follower")
+        case .following: return dbRef.child("user-following")
+        case .likes:     return postLikesRef
+        }
     }
     
     fileprivate func fetchUsers() {
-        let followType = viewFollowers ? "user-follower" : "user-following"
-        dbRef.child(followType).child(uid!).observeSingleEvent(of: .value) { (snapshot) in
+        guard let ref = getDatabaseReference() else { return }
+        ref.child(uid!).observeSingleEvent(of: .value) { (snapshot) in
             guard let allIds = snapshot.children.allObjects as? [DataSnapshot] else {return}
             allIds.forEach({ (usrid) in
                 let userId = usrid.key

@@ -130,10 +130,44 @@ extension HomeFeedViewController : FeedCellDelegate {
     }
     
     func handleLikeTapped(for feedCell: HomeFeedCollectionViewCell) {
-        
+        guard let post = feedCell.post else { return }
+        if post.didLike {
+            post.adjustLikes(addLike: false) { (likesCount) in
+                feedCell.likeBtn.setImage(#imageLiteral(resourceName: "like_unselected"), for: .normal)
+                feedCell.likesLabel.text = String(likesCount) + " " + "likes"
+            }
+        }else {
+            post.adjustLikes(addLike: true) { (likesCount) in
+                feedCell.likeBtn.setImage(#imageLiteral(resourceName: "like_selected"), for: .normal)
+                feedCell.likesLabel.text = String(likesCount) + " " + "likes"
+            }
+        }
     }
     
     func handleCommentTapped(for feedCell: HomeFeedCollectionViewCell) {
         
+    }
+    
+    func handleConfigureLikeButton(for feedCell: HomeFeedCollectionViewCell) {
+        guard let post = feedCell.post else { return }
+        
+        guard let userId = loggedInUid else { return }
+        userLikesRef.child(userId).observeSingleEvent(of: .value) { (snapshot) in
+            if snapshot.hasChild(post.postId) {
+                post.didLike = true
+                feedCell.likeBtn.setImage(#imageLiteral(resourceName: "like_selected"), for: .normal)
+            }else {
+                post.didLike = false
+                feedCell.likeBtn.setImage(#imageLiteral(resourceName: "like_unselected"), for: .normal)
+            }
+        }
+    }
+    
+    func handleShowLikes(for feedCell: HomeFeedCollectionViewCell) {
+        self.pushTo(vc: FollowViewController.self, storyboard: "Main", beforeCompletion: { (vc) -> (Bool) in
+            vc.viewingMode = FollowViewController.ViewingMode(index: 2)
+            vc.uid = feedCell.post?.postId
+            return true
+        }, completion: nil)
     }
 }

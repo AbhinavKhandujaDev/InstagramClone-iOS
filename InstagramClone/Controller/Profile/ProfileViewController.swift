@@ -137,7 +137,7 @@ extension ProfileViewController: ProfileHeaderDelegate {
     
     func handleFollowersTapped(for header: ProfileHeaderCell) {
         self.pushTo(vc: FollowViewController.self, storyboard: "Main", beforeCompletion: { (vc) -> (Bool) in
-            vc.viewFollowers = true
+            vc.viewingMode = FollowViewController.ViewingMode(index: 1)
             vc.uid = self.user?.uid
             return true
         }, completion: nil)
@@ -145,7 +145,7 @@ extension ProfileViewController: ProfileHeaderDelegate {
     
     func handleFollowingTapped(for header: ProfileHeaderCell) {
         self.pushTo(vc: FollowViewController.self, storyboard: "Main", beforeCompletion: { (vc) -> (Bool) in
-            vc.viewFollowing = true
+            vc.viewingMode = FollowViewController.ViewingMode(index: 0)
             vc.uid = self.user?.uid
             return true
         }, completion: nil)

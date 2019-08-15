@@ -144,10 +144,13 @@
             <size key="customSize" width="487" height="679"/>
             <connections>
                 <outlet property="captionLabel" destination="SdI-IY-4ED" id="Ghp-0I-d8W"/>
+                <outlet property="commentBtn" destination="bbL-0T-XdV" id="XAh-Xg-W1J"/>
+                <outlet property="likeBtn" destination="17H-cJ-5f3" id="AdU-hR-Vxq"/>
                 <outlet property="likesLabel" destination="VrW-Xx-1aL" id="pPE-TN-tf4"/>
                 <outlet property="optionsBtn" destination="qKL-hl-mHU" id="INd-l9-hNt"/>
                 <outlet property="postImageView" destination="4m4-Ir-FpP" id="DDq-iB-Jo2"/>
                 <outlet property="profileImgView" destination="pI6-fx-TxH" id="MTC-m3-Zbw"/>
+                <outlet property="shareBtn" destination="lq1-XS-sfy" id="S44-vU-8jc"/>
                 <outlet property="timeLabel" destination="w8h-ga-IfM" id="YiY-y0-h1R"/>
                 <outlet property="usernameLabel" destination="YKx-J8-IdV" id="AFZ-TP-tir"/>
             </connections>

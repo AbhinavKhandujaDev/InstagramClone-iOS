@@ -11,11 +11,15 @@ import UIKit
 class HomeFeedCollectionViewCell: UICollectionViewCell {
 
     @IBOutlet weak var profileImgView: CustomImageView!
-    @IBOutlet weak var usernameLabel: UIButton!
-    @IBOutlet weak var optionsBtn: UIButton!
     @IBOutlet weak var likesLabel: UILabel!
     @IBOutlet weak var captionLabel: UILabel!
     @IBOutlet weak var timeLabel: UILabel!
+    
+    @IBOutlet weak var usernameLabel: UIButton!
+    @IBOutlet weak var optionsBtn: UIButton!
+    @IBOutlet weak var likeBtn: UIButton!
+    @IBOutlet weak var commentBtn: UIButton!
+    @IBOutlet weak var shareBtn: UIButton!
     
     @IBOutlet weak var postImageView: CustomImageView!
     
@@ -24,9 +28,9 @@ class HomeFeedCollectionViewCell: UICollectionViewCell {
     var post : Post? {
         didSet{
             postImageView.loadImage(with: (post?.imageUrl)!)
-            likesLabel.text = String(describing: post?.likes!)
+            likesLabel.text = String(describing: post?.likes ?? 0) + " " + "likes"
             captionLabel.text = post?.caption
-            timeLabel.text = String(describing: post?.createdAt!)
+            timeLabel.text = String(describing: post?.createdAt ?? Date(timeIntervalSince1970: 0))
             
             guard let owner = post?.ownerUid else {return}
             dbRef.child("users").child(owner).observeSingleEvent(of: .value) { (snapshot) in
@@ -35,13 +39,21 @@ class HomeFeedCollectionViewCell: UICollectionViewCell {
                 self.profileImgView.loadImage(with: ss["profileImageUrl"] as! String)
                 self.usernameLabel.setTitle(username, for: .normal)
             }
+            
+            delegate?.handleConfigureLikeButton(for: self)
         }
     }
     
     override func awakeFromNib() {
         super.awakeFromNib()
         profileImgView.layer.cornerRadius = profileImgView.frame.height/2
+        likesLabel.addTapGesture(target: self, selector: #selector(self.likesLabelTapped(sender:)))
     }
+    
+    @objc private func likesLabelTapped(sender: UITapGestureRecognizer) {
+        delegate?.handleShowLikes(for: self)
+    }
+    
     @IBAction func usernameTapped(_ sender: UIButton) {
         delegate?.handleUsernameTapped(for: self)
     }
