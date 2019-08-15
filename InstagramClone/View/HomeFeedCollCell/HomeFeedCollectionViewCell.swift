@@ -46,8 +46,13 @@ class HomeFeedCollectionViewCell: UICollectionViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        postImageView.addTapGesture(target: self, selector: #selector(self.doubleTapToLike(sender:)), tapsRequired: 2)
         profileImgView.layer.cornerRadius = profileImgView.frame.height/2
         likesLabel.addTapGesture(target: self, selector: #selector(self.likesLabelTapped(sender:)))
+    }
+    
+    @objc private func doubleTapToLike(sender: UITapGestureRecognizer) {
+        delegate?.handleLikeTapped(for: self)
     }
     
     @objc private func likesLabelTapped(sender: UITapGestureRecognizer) {
