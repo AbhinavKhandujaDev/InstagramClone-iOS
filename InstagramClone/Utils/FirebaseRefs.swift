@@ -12,8 +12,12 @@ import Firebase
 let dbRef = Database.database().reference()
 let storageRef = Storage.storage().reference()
 let loggedInUid = Auth.auth().currentUser?.uid
+
 let postRef = dbRef.child("posts")
 let userFeedRef = dbRef.child("user-feed")
+
 let userLikesRef = dbRef.child("user-likes")
 let postLikesRef = dbRef.child("post-likes")
+
+let commentsRef = dbRef.child("comments")
 

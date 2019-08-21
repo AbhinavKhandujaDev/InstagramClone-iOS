@@ -439,6 +439,67 @@
             </objects>
             <point key="canvasLocation" x="-674" y="1702"/>
         </scene>
+        <!--Comment View Controller-->
+        <scene sceneID="KeK-Gz-aua">
+            <objects>
+                <tableViewController storyboardIdentifier="CommentViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="gVw-Zu-js6" customClass="CommentViewController" customModule="InstagramClone" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" keyboardDismissMode="interactive" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="xZZ-E4-QeD">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="commentTableCell" rowHeight="84" id="bij-8t-EvQ" customClass="CommentTableViewCell" customModule="InstagramClone" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="28" width="375" height="84"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="bij-8t-EvQ" id="z5v-Tc-NhP">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="84"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="cRp-NN-7eb" customClass="CustomImageView" customModule="InstagramClone" customModuleProvider="target">
+                                            <rect key="frame" x="8" y="18" width="48" height="48"/>
+                                            <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="48" id="Lic-ji-CIa"/>
+                                                <constraint firstAttribute="width" secondItem="cRp-NN-7eb" secondAttribute="height" multiplier="1:1" id="mjz-0U-tLs"/>
+                                            </constraints>
+                                        </imageView>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zE5-rK-elt">
+                                            <rect key="frame" x="64" y="8" width="303" height="67.5"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="60" id="Vh8-Pj-Yz5"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="17"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="zE5-rK-elt" firstAttribute="leading" secondItem="cRp-NN-7eb" secondAttribute="trailing" constant="8" id="02F-UM-vRg"/>
+                                        <constraint firstItem="cRp-NN-7eb" firstAttribute="leading" secondItem="z5v-Tc-NhP" secondAttribute="leading" constant="8" id="ACF-fV-TkN"/>
+                                        <constraint firstItem="cRp-NN-7eb" firstAttribute="centerY" secondItem="z5v-Tc-NhP" secondAttribute="centerY" id="FwK-lV-6R6"/>
+                                        <constraint firstAttribute="bottom" secondItem="zE5-rK-elt" secondAttribute="bottom" constant="8" id="G7q-cy-pf5"/>
+                                        <constraint firstAttribute="trailing" secondItem="zE5-rK-elt" secondAttribute="trailing" constant="8" id="Jya-Kc-Mqb"/>
+                                        <constraint firstItem="zE5-rK-elt" firstAttribute="top" secondItem="z5v-Tc-NhP" secondAttribute="top" constant="8" id="Kk3-ND-vX7"/>
+                                        <constraint firstItem="cRp-NN-7eb" firstAttribute="width" secondItem="cRp-NN-7eb" secondAttribute="height" multiplier="1:1" id="Tfp-B7-m9V"/>
+                                        <constraint firstItem="zE5-rK-elt" firstAttribute="centerY" secondItem="cRp-NN-7eb" secondAttribute="centerY" id="zZP-e7-0xd"/>
+                                    </constraints>
+                                </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="commentLabel" destination="zE5-rK-elt" id="uOm-BD-Fef"/>
+                                    <outlet property="profileImageView" destination="cRp-NN-7eb" id="ehl-a5-Lik"/>
+                                </connections>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="gVw-Zu-js6" id="K9E-Wt-OTK"/>
+                            <outlet property="delegate" destination="gVw-Zu-js6" id="hhZ-zG-qfT"/>
+                        </connections>
+                    </tableView>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Ngo-FQ-wuB" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-674.39999999999998" y="2444.527736131934"/>
+        </scene>
         <!--Root Home Tab Bar Controller-->
         <scene sceneID="lid-5k-a5p">
             <objects>

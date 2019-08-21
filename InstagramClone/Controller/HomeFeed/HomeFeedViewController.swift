@@ -64,18 +64,6 @@ class HomeFeedViewController: UIViewController {
         }
     }
     
-//    fileprivate func updateUserFeeds() {
-//        guard let currentUser = loggedInUid else { return }
-//        dbRef.child("user-following").child(currentUser).observe(.childAdded) { (snapshot) in
-//            let followingUser = snapshot.key
-//            dbRef.child("user-posts").child(followingUser).observeSingleEvent(of: .value, with: { (ss) in
-//                if let ss = ss.value {
-//                    self.fetchPosts()
-//                }
-//            })
-//        }
-//    }
-    
     @objc fileprivate func logout() {
         let alert = UIAlertController(title: "Are you sure?", message: nil, preferredStyle: .actionSheet)
         
@@ -145,7 +133,11 @@ extension HomeFeedViewController : FeedCellDelegate {
     }
     
     func handleCommentTapped(for feedCell: HomeFeedCollectionViewCell) {
-        
+        self.pushTo(vc: CommentViewController.self, storyboard: "Main", beforeCompletion: { (vc) -> (Bool) in
+            guard let postId = feedCell.post?.postId else {return false}
+            vc.postId = postId
+            return true
+        }, completion: nil)
     }
     
     func handleConfigureLikeButton(for feedCell: HomeFeedCollectionViewCell) {
