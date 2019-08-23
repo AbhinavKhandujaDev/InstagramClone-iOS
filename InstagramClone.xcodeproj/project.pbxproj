@@ -13,6 +13,8 @@
 		1C04206D22F3256D00DF1C13 /* PostViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C04206C22F3256D00DF1C13 /* PostViewController.swift */; };
 		1C04206F22F3257E00DF1C13 /* NotificationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C04206E22F3257E00DF1C13 /* NotificationViewController.swift */; };
 		1C04207122F3258B00DF1C13 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C04207022F3258B00DF1C13 /* ProfileViewController.swift */; };
+		1C28CE01231037BA007F9B32 /* SearchCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C28CDFF231037BA007F9B32 /* SearchCollectionViewCell.swift */; };
+		1C28CE02231037BA007F9B32 /* SearchCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1C28CE00231037BA007F9B32 /* SearchCollectionViewCell.xib */; };
 		1C3CE0062309921F002ED809 /* CommentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C3CE0052309921F002ED809 /* CommentViewController.swift */; };
 		1C3CE00D2309BDAA002ED809 /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C3CE00C2309BDA9002ED809 /* Comment.swift */; };
 		1C3FEFF022F42AD5007D293F /* ProfileHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C3FEFEE22F42AD5007D293F /* ProfileHeaderCell.swift */; };
@@ -53,6 +55,8 @@
 		1C04206C22F3256D00DF1C13 /* PostViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostViewController.swift; sourceTree = "<group>"; };
 		1C04206E22F3257E00DF1C13 /* NotificationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationViewController.swift; sourceTree = "<group>"; };
 		1C04207022F3258B00DF1C13 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
+		1C28CDFF231037BA007F9B32 /* SearchCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchCollectionViewCell.swift; sourceTree = "<group>"; };
+		1C28CE00231037BA007F9B32 /* SearchCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SearchCollectionViewCell.xib; sourceTree = "<group>"; };
 		1C3CE0052309921F002ED809 /* CommentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentViewController.swift; sourceTree = "<group>"; };
 		1C3CE00C2309BDA9002ED809 /* Comment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comment.swift; sourceTree = "<group>"; };
 		1C3FEFEE22F42AD5007D293F /* ProfileHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileHeaderCell.swift; sourceTree = "<group>"; };
@@ -102,6 +106,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1C28CDF8231036B5007F9B32 /* SearchCells */ = {
+			isa = PBXGroup;
+			children = (
+				1C28CDFE2310379E007F9B32 /* SearchCollCell */,
+				1CF8FCA522F986F70052D87E /* SearchTableCell */,
+			);
+			path = SearchCells;
+			sourceTree = "<group>";
+		};
+		1C28CDFE2310379E007F9B32 /* SearchCollCell */ = {
+			isa = PBXGroup;
+			children = (
+				1C28CDFF231037BA007F9B32 /* SearchCollectionViewCell.swift */,
+				1C28CE00231037BA007F9B32 /* SearchCollectionViewCell.xib */,
+			);
+			path = SearchCollCell;
+			sourceTree = "<group>";
+		};
 		1C3FEFE922F40184007D293F /* HomeFeed */ = {
 			isa = PBXGroup;
 			children = (
@@ -204,7 +226,7 @@
 		1C7257AC22F26A1500DECF8D /* View */ = {
 			isa = PBXGroup;
 			children = (
-				1CF8FCA522F986F70052D87E /* SearchTableCell */,
+				1C28CDF8231036B5007F9B32 /* SearchCells */,
 				1C3FEFF222F42AD9007D293F /* ProfileHeaderCell */,
 				1CC44E0622F79D400089C92D /* FollowTableViewCell.swift */,
 				1CF8FCAC22F9D25E0052D87E /* SelectImageView */,
@@ -348,6 +370,7 @@
 			files = (
 				1C7257A422F269F100DECF8D /* LaunchScreen.storyboard in Resources */,
 				1C7257B422F28E1000DECF8D /* GoogleService-Info.plist in Resources */,
+				1C28CE02231037BA007F9B32 /* SearchCollectionViewCell.xib in Resources */,
 				1C7257A122F269F100DECF8D /* Assets.xcassets in Resources */,
 				1C3FEFF122F42AD5007D293F /* ProfileHeaderCell.xib in Resources */,
 				1C72579F22F269EF00DECF8D /* Main.storyboard in Resources */,
@@ -460,6 +483,7 @@
 				1CF59EEF230D526C00D1E999 /* CommentTableViewCell.swift in Sources */,
 				1C3CE0062309921F002ED809 /* CommentViewController.swift in Sources */,
 				1CD0670E22F5F0AA001642A1 /* SearchTableViewCell.swift in Sources */,
+				1C28CE01231037BA007F9B32 /* SearchCollectionViewCell.swift in Sources */,
 				1CF8FCAB22F9CB2B0052D87E /* SelectImageCollectionViewCell.swift in Sources */,
 				1C753C0322FE67B000AC6C35 /* UserPostsCollectionViewCell.swift in Sources */,
 				1CC44E0322F77E410089C92D /* Protocols.swift in Sources */,
