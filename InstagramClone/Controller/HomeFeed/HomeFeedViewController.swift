@@ -134,8 +134,8 @@ extension HomeFeedViewController : FeedCellDelegate {
     
     func handleCommentTapped(for feedCell: HomeFeedCollectionViewCell) {
         self.pushTo(vc: CommentViewController.self, storyboard: "Main", beforeCompletion: { (vc) -> (Bool) in
-            guard let postId = feedCell.post?.postId else {return false}
-            vc.postId = postId
+            guard let post = feedCell.post else {return false}
+            vc.post = post
             return true
         }, completion: nil)
     }

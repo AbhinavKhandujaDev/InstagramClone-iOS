@@ -14,7 +14,7 @@ class CommentViewController: UITableViewController {
     private let comentCellIdentifier = "commentTableCell"
     private let padding : CGFloat = 0
     
-    var postId : String!
+    var post : Post!
     
     var comments = [Comment]()
     
@@ -86,13 +86,14 @@ class CommentViewController: UITableViewController {
         guard let uid = loggedInUid else {return}
         let creationDate = Int(Date().timeIntervalSince1970)
         let values : [String : Any] = ["commentText": text, "creationDate": creationDate, "user": uid]
-        commentsRef.child(postId).childByAutoId().updateChildValues(values) { (error, ref) in
+        commentsRef.child(post.postId).childByAutoId().updateChildValues(values) { (error, ref) in
+            self.uploadCommentNotifToServer()
             self.commentTextField.text = nil
         }
     }
 
     private func fetchComments() {
-        commentsRef.child(postId).observe(.childAdded) { (snapshot) in
+        commentsRef.child(post.postId).observe(.childAdded) { (snapshot) in
             guard let ssValue = snapshot.value as? [String:Any] else {return}
             guard let uid = ssValue["user"] as? String else {return}
             dbRef.child("users").child(uid).observeSingleEvent(of: .value) { (ss) in
@@ -103,6 +104,16 @@ class CommentViewController: UITableViewController {
                 self.tableView.reloadData()
             }
         }
+    }
+    
+    private func uploadCommentNotifToServer() {
+        guard let currUser = loggedInUid else { return }
+        if currUser == post.ownerUid {return}
+        let creationDate = Int(Date().timeIntervalSince1970)
+        let values : [String:Any] = ["checked" : 0, "creationDate" : creationDate, "uid" : currUser, "type" : commentIntValue, "postId" : post.postId]
+        
+        let notifRef = notificationsRef.child(post.ownerUid).childByAutoId()
+        notifRef.updateChildValues(values)
     }
 }
 

@@ -21,3 +21,11 @@ let postLikesRef = dbRef.child("post-likes")
 
 let commentsRef = dbRef.child("comments")
 
+let notificationsRef = dbRef.child("notifications")
+//let unreadNotifRef = dbRef.child("unread-notifications")
+
+let likeIntValue = 0
+let commentIntValue = 1
+let followIntValue = 2
+
+

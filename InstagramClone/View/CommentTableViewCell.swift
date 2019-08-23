@@ -16,12 +16,13 @@ class CommentTableViewCell: UITableViewCell {
     
     var comment : Comment? {
         didSet{
-            guard let user = comment?.user else { return }
+            guard let comment = comment else { return }
+            guard let user = comment.user else { return }
             guard let imgUrl = user.profileImageUrl else { return }
             guard let username = user.username else { return }
-            guard let comment = comment?.commentText else { return }
+            guard let commentText = comment.commentText else { return }
             profileImageView.loadImage(with: imgUrl)
-            setAttributedText(username: username, comment: comment)
+            setAttributedText(username: username, comment: commentText, date: comment.creationDate.timeToDisplay())
         }
     }
     
@@ -30,13 +31,13 @@ class CommentTableViewCell: UITableViewCell {
         profileImageView.layer.cornerRadius = profileImageView.frame.height/2
     }
 
-    private func setAttributedText(username: String, comment: String) {
+    private func setAttributedText(username: String, comment: String, date: String) {
         let textAttrs = [NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 12)]
         let appendTextAttrs = [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 12), NSAttributedString.Key.foregroundColor: UIColor.lightGray]
         
         let attributedText = NSMutableAttributedString(string: username, attributes: textAttrs)
         attributedText.append(NSAttributedString(string: " \(comment)", attributes: textAttrs))
-        attributedText.append(NSAttributedString(string: " 2d.", attributes: appendTextAttrs))
+        attributedText.append(NSAttributedString(string: " \(date)", attributes: appendTextAttrs))
         
         commentLabel.attributedText = attributedText
     }

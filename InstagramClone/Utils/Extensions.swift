@@ -48,6 +48,42 @@ extension UIView {
     }
 }
 
+extension Date {
+    func timeAgoDisplay() -> String {
+        let secondsAgo = Int(Date().timeIntervalSince(self))
+        
+        let minute = 60
+        let hour = minute * 60
+        let day = hour * 24
+        let week = day * 7
+        let month = week * 4
+        
+        if secondsAgo < 60 {
+            return "\(secondsAgo) seconds ago"
+        }else if secondsAgo < hour {
+            return "\(secondsAgo/minute) minutes ago"
+        }else if secondsAgo < day {
+            return "\(secondsAgo/hour) hours ago"
+        }else if secondsAgo < week {
+            return "\(secondsAgo/day) days ago"
+        }else if secondsAgo < month {
+            return "\(secondsAgo/week) weeks ago"
+        }else {
+            return "\(secondsAgo/month) month(s) ago"
+        }
+    }
+    
+    func timeToDisplay() -> String {
+        let dateFormatter = DateComponentsFormatter()
+        dateFormatter.allowedUnits = [.second, .minute, .hour, .day, .weekOfMonth]
+        dateFormatter.maximumUnitCount = 1
+        dateFormatter.unitsStyle = .abbreviated
+        let now = Date()
+        let dateToDisplay = dateFormatter.string(from: self, to: now)
+        return ((dateToDisplay ?? "") + " ago")
+    }
+}
+
 extension UIViewController {
     func pushTo<T:UIViewController>(vc: T.Type, storyboard: String = "Main", beforeCompletion: ((T)->(Bool))? = nil, completion:(()->())? = nil) {
         let storyboard = UIStoryboard(name: storyboard, bundle: nil)
@@ -112,5 +148,13 @@ extension DatabaseReference {
                 completion(post)
             }
         })
+    }
+    
+    func fetchUser(uid: String, completion: @escaping((User)->())) {
+        dbRef.child("users").child(uid).observeSingleEvent(of: .value) { (ss) in
+            guard let dict = ss.value as? [String:AnyObject] else {return}
+            let user = User(uid: uid, details: dict)
+            completion(user)
+        }
     }
 }

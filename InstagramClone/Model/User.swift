@@ -44,6 +44,7 @@ class User {
                 completion(false)
                 return
             }
+            self?.uploadFollowNotifToServer()
             dbRef.child(FollowUnfollow.follower.rawValue).child(searchedUid).updateChildValues([loggedInUid : 1]) { (error,ref) in
                 self?.addPosts(followedUser: searchedUid, loggedInUser: loggedInUid)
                 self?.isFollowed = true
@@ -79,6 +80,15 @@ class User {
             }
             completion(self.isFollowed)
         }
+    }
+    
+    func uploadFollowNotifToServer() {
+        guard let currUser = loggedInUid else { return }
+        if currUser == uid {return}
+        let creationDate = Int(Date().timeIntervalSince1970)
+        let values : [String:Any] = ["checked" : 0, "creationDate" : creationDate, "uid" : currUser, "type" : followIntValue]
+        
+        notificationsRef.child(uid!).childByAutoId().updateChildValues(values)
     }
     
     private func addPosts(followedUser: String, loggedInUser: String) {

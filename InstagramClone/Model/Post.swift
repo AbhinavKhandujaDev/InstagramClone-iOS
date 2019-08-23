@@ -42,6 +42,7 @@ class Post {
         if addLike {
             //update like from user-like structure
             userLikesRef.child(userId).setValue([postId : 1]) { (error, ref) in
+                self.sendLikeNotifToServer()
                 //update like from user-like structure
                 postLikesRef.child(self.postId).updateChildValues([userId : 1]) { (error, ref) in
                     self.likes += 1
@@ -52,31 +53,35 @@ class Post {
             }
         }else {
             
-            //remove like from user-like structure
-            userLikesRef.child(userId).child(postId).removeValue { (error, ref) in
-                
-                //remove like from post-like structure
-                postLikesRef.child(self.postId).child(userId).removeValue { (error, ref) in
-                    guard self.likes > 0 else {return}
-                    self.likes -= 1
-                    self.didLike = false
-                    completion(self.likes)
-                    postRef.child(self.postId).updateChildValues(["likes" : self.likes])
-                }
+            userLikesRef.child(userId).child(postId).observeSingleEvent(of: .value) { (snapshot) in
+                guard let notificationId = snapshot.value as? String else {return}
+                notificationsRef.child(self.ownerUid).child(notificationId).removeValue(completionBlock: { (error, ref) in
+                    //remove like from user-like structure
+                    userLikesRef.child(userId).child(self.postId).removeValue { (error, ref) in
+                        
+                        //remove like from post-like structure
+                        postLikesRef.child(self.postId).child(userId).removeValue { (error, ref) in
+                            guard self.likes > 0 else {return}
+                            self.likes -= 1
+                            self.didLike = false
+                            completion(self.likes)
+                            postRef.child(self.postId).updateChildValues(["likes" : self.likes])
+                        }
+                    }
+                })
             }
         }
     }
     
-//    func checkForDidLike(completion: @escaping((Bool)->())) {
-//        guard let userId = loggedInUid else { return }
-//        userLikesRef.child(userId).observeSingleEvent(of: .value) { (snapshot) in
-//            if snapshot.hasChild(self.postId) {
-//                self.didLike = true
-//            }else {
-//                self.didLike = false
-//            }
-//            completion(self.didLike)
-//        }
-//    }
-    
+    func sendLikeNotifToServer() {
+        guard let currUser = loggedInUid else { return }
+        if currUser == self.ownerUid {return}
+        let creationDate = Int(Date().timeIntervalSince1970)
+        let values : [String:Any] = ["checked" : 0, "creationDate" : creationDate, "uid" : currUser, "type" : likeIntValue, "postId" : postId]
+        
+        let notifRef = notificationsRef.child(self.ownerUid).childByAutoId()
+        notifRef.updateChildValues(values) { (error, ref) in
+            userLikesRef.child(currUser).child(self.postId).setValue(notifRef.key)
+        }
+    }
 }

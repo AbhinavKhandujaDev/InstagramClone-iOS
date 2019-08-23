@@ -27,10 +27,11 @@ class HomeFeedCollectionViewCell: UICollectionViewCell {
     
     var post : Post? {
         didSet{
+            guard let date = post?.createdAt else { return }
             postImageView.loadImage(with: (post?.imageUrl)!)
             likesLabel.text = String(describing: post?.likes ?? 0) + " " + "likes"
             captionLabel.text = post?.caption
-            timeLabel.text = String(describing: post?.createdAt ?? Date(timeIntervalSince1970: 0))
+            timeLabel.text = date.timeAgoDisplay()
             
             guard let owner = post?.ownerUid else {return}
             dbRef.child("users").child(owner).observeSingleEvent(of: .value) { (snapshot) in

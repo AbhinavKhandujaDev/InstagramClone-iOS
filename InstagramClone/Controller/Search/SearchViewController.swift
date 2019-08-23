@@ -15,14 +15,14 @@ class SearchViewController: UIViewController {
     
     fileprivate var users = [User]()
     
+    private let searchBar = UISearchBar()
+    
     @IBOutlet weak var searchTableView: UITableView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        configureSearchBar()
         searchTableView.register(UINib(nibName: "SearchTableViewCell", bundle: nil), forCellReuseIdentifier: searchUserIdentifier)
-        
-        self.navigationItem.title = "Search"
         fetchUsers()
     }
     
@@ -36,7 +36,20 @@ class SearchViewController: UIViewController {
             self.searchTableView.reloadData()
         }
     }
+    
+    private func configureSearchBar() {
+        searchBar.sizeToFit()
+        searchBar.delegate = self
+        navigationItem.titleView = searchBar
+        searchBar.barTintColor = UIColor(red: 240/255, green: 240/255, blue: 240/255, alpha: 1)
+        searchBar.tintColor = .black
+        searchBar.placeholder = "Search"
+    }
 
+}
+
+extension SearchViewController : UISearchBarDelegate {
+    
 }
 
 extension SearchViewController : UITableViewDelegate, UITableViewDataSource {
