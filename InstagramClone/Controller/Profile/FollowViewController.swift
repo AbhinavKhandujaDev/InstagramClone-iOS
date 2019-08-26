@@ -71,7 +71,7 @@ class FollowViewController: UIViewController {
             guard let allIds = snapshot.children.allObjects as? [DataSnapshot] else {return}
             allIds.forEach({ (usrid) in
                 let userId = usrid.key
-                dbRef.child("users").child(userId).observeSingleEvent(of: .value, with: { (objSnapshot) in
+                usersRef.child(userId).observeSingleEvent(of: .value, with: { (objSnapshot) in
                     guard let details = objSnapshot.value as? [String:AnyObject] else {return}
                     let usr = User(uid: objSnapshot.key, details: details)
                     

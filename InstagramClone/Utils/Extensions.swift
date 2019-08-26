@@ -9,6 +9,12 @@
 import UIKit
 import Firebase
 
+extension UIColor {
+    static func rgb(red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat) -> UIColor {
+        return UIColor(red: red/255, green: green/255, blue: blue/255, alpha: alpha)
+    }
+}
+
 extension UIView {
     func anchor(top: NSLayoutYAxisAnchor?, left: NSLayoutXAxisAnchor?, bottom: NSLayoutYAxisAnchor?, right: NSLayoutXAxisAnchor?, paddingTop: CGFloat, paddingLeft: CGFloat, paddingBottom: CGFloat, paddingRight: CGFloat, width: CGFloat, height: CGFloat) {
         
@@ -46,6 +52,12 @@ extension UIView {
         self.isUserInteractionEnabled = true
         self.addGestureRecognizer(tapGest)
     }
+    
+    func roundCorners(radius: CGFloat? = nil) {
+        self.clipsToBounds = true
+        self.layer.cornerRadius = (radius != nil) ? radius! : self.frame.height/2
+    }
+    
 }
 
 extension Date {
@@ -151,7 +163,7 @@ extension DatabaseReference {
     }
     
     func fetchUser(uid: String, completion: @escaping((User)->())) {
-        dbRef.child("users").child(uid).observeSingleEvent(of: .value) { (ss) in
+        usersRef.child(uid).observeSingleEvent(of: .value) { (ss) in
             guard let dict = ss.value as? [String:AnyObject] else {return}
             let user = User(uid: uid, details: dict)
             completion(user)

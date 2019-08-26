@@ -78,7 +78,6 @@ class CommentViewController: UITableViewController {
     override var canBecomeFirstResponder: Bool {
         return true
     }
-
     
     @objc private func handleUploadComment() {
         if !commentTextField.hasText {return}
@@ -96,7 +95,7 @@ class CommentViewController: UITableViewController {
         commentsRef.child(post.postId).observe(.childAdded) { (snapshot) in
             guard let ssValue = snapshot.value as? [String:Any] else {return}
             guard let uid = ssValue["user"] as? String else {return}
-            dbRef.child("users").child(uid).observeSingleEvent(of: .value) { (ss) in
+            usersRef.child(uid).observeSingleEvent(of: .value) { (ss) in
                 guard let dict = ss.value as? [String:AnyObject] else {return}
                 let usr = User(uid: uid, details: dict)
                 let comment = Comment(user: usr, dictionary: ssValue)

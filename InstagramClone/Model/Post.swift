@@ -18,6 +18,8 @@ class Post {
     var postId : String!
     var didLike = false
     
+    var user : User!
+    
     init(postId: String, dict : [String:Any]) {
         self.postId = postId
         if let date = dict["createdAt"] as? Int {
@@ -34,7 +36,11 @@ class Post {
         }
         if let ownerUid = dict["uid"] as? String {
             self.ownerUid = ownerUid
+            dbRef.fetchUser(uid: ownerUid) { (user) in
+                self.user = user
+            }
         }
+        
     }
     
     func adjustLikes(addLike: Bool, completion: @escaping((Int)->())) {

@@ -55,7 +55,7 @@ class ProfileViewController: UIViewController {
     fileprivate func fetchCurrentUserData() {
         let date = Date()
         let currentUid = loggedInUid
-        dbRef.child("users").child(currentUid!).observeSingleEvent(of: .value) { (snapshot) in
+        usersRef.child(currentUid!).observeSingleEvent(of: .value) { (snapshot) in
             let uid = snapshot.key
             guard let details = snapshot.value as? [String:AnyObject] else {return}
             self.user = User(uid: uid, details: details)

@@ -25,10 +25,12 @@ class HomeFeedViewController: UIViewController {
         configureNavBar()
         feedCollView.register(UINib(nibName: "HomeFeedCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: feedCellIdentifier)
         fetchPosts()
-        
+
         let refreshCtrl = UIRefreshControl()
         refreshCtrl.addTarget(self, action: #selector(handleRefresh), for: .valueChanged)
         feedCollView.refreshControl = refreshCtrl
+        
+        navigationItem.rightBarButtonItem?.action = #selector(showMessagesTapped(_:))
     }
     
     fileprivate func configureNavBar() {
@@ -78,6 +80,11 @@ class HomeFeedViewController: UIViewController {
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         self.present(alert, animated: true, completion: nil)
     }
+    @objc private func showMessagesTapped(_ sender: Any) {
+        self.pushTo(vc: MessagesViewController.self, storyboard: "Main", beforeCompletion: { (vc) -> (Bool) in
+            return true
+        }, completion: nil)
+    }
 }
 
 extension HomeFeedViewController : UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
@@ -101,10 +108,17 @@ extension HomeFeedViewController : UICollectionViewDataSource, UICollectionViewD
 }
 
 extension HomeFeedViewController : FeedCellDelegate {
+    func handleShowMessages(for feedCell: HomeFeedCollectionViewCell) {
+        self.pushTo(vc: ChatViewController.self, storyboard: "Main", beforeCompletion: { (vc) -> (Bool) in
+            vc.user = feedCell.post?.user
+            return true
+        }, completion: nil)
+    }
+    
     func handleUsernameTapped(for feedCell: HomeFeedCollectionViewCell) {
         self.pushTo(vc: ProfileViewController.self, storyboard: "Main", beforeCompletion: { (vc) -> (Bool) in
             guard let uid = feedCell.post?.ownerUid else {return false}
-            dbRef.child("users").child(uid).observeSingleEvent(of: .value, with: { (ss) in
+            usersRef.child(uid).observeSingleEvent(of: .value, with: { (ss) in
                 guard let ss = ss.value as? [String:AnyObject] else {return}
                 let user = User(uid: (feedCell.post?.ownerUid)!, details: ss)
                 vc.user = user

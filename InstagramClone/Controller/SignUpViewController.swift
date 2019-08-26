@@ -113,7 +113,7 @@ class SignUpViewController: UIViewController {
                     //saving user info to database
                     let values = [result?.user.uid: userInfo]
                     
-                    dbRef.child("users").updateChildValues(values, withCompletionBlock: { (userInfoError, databaseRef) in
+                    usersRef.updateChildValues(values, withCompletionBlock: { (userInfoError, databaseRef) in
                         if userInfoError != nil{
                             print("error in saving user data: ",userInfoError as Any)
                             return

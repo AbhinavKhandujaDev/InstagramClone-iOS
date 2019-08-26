@@ -26,6 +26,7 @@ protocol FeedCellDelegate {
     func handleCommentTapped(for feedCell: HomeFeedCollectionViewCell)
     func handleConfigureLikeButton(for feedCell: HomeFeedCollectionViewCell)
     func handleShowLikes(for feedCell: HomeFeedCollectionViewCell)
+    func handleShowMessages(for feedCell: HomeFeedCollectionViewCell)
 }
 
 protocol Printable {

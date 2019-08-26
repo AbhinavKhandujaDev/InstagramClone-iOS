@@ -16,12 +16,6 @@ class NotificationViewController: UITableViewController {
     
     private var timer : Timer?
     
-    var str = ""
-    
-    override func viewWillAppear(_ animated: Bool) {
-        print("passed str is ")
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationItem.title = "Notifications"
@@ -110,6 +104,7 @@ extension NotificationViewController: NotificationCellDelegate {
     func handlePostTapped(for notifCell: NotificationsTableViewCell) {
         self.pushTo(vc: HomeFeedViewController.self, storyboard: "Main", beforeCompletion: { (vc) -> (Bool) in
             vc.post = notifCell.notification?.post
+            vc.viewSinglePost = true
             return true
         }, completion: nil)
     }

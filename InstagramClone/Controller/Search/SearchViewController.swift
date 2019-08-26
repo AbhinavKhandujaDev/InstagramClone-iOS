@@ -59,10 +59,11 @@ class SearchViewController: UIViewController {
         searchBar.barTintColor = UIColor(red: 240/255, green: 240/255, blue: 240/255, alpha: 1)
         searchBar.tintColor = .black
         searchBar.placeholder = "Search"
+        searchBar.showsCancelButton = true
     }
     
     fileprivate func fetchUsers() {
-        dbRef.child("users").observe(.childAdded) { (snapshot) in
+        usersRef.observe(.childAdded) { (snapshot) in
             guard let details = snapshot.value as? [String:AnyObject] else {return}
             let uid = snapshot.key
             
@@ -107,7 +108,7 @@ extension SearchViewController : UISearchBarDelegate {
         }
     }
     
-    private func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         searchBar.endEditing(true)
         searchBar.showsCancelButton = false
         searchBar.text = nil

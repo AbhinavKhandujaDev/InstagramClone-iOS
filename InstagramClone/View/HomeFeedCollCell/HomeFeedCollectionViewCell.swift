@@ -19,7 +19,7 @@ class HomeFeedCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var optionsBtn: UIButton!
     @IBOutlet weak var likeBtn: UIButton!
     @IBOutlet weak var commentBtn: UIButton!
-    @IBOutlet weak var shareBtn: UIButton!
+    @IBOutlet weak var messagesBtn: UIButton!
     
     @IBOutlet weak var postImageView: CustomImageView!
     
@@ -34,7 +34,7 @@ class HomeFeedCollectionViewCell: UICollectionViewCell {
             timeLabel.text = date.timeAgoDisplay()
             
             guard let owner = post?.ownerUid else {return}
-            dbRef.child("users").child(owner).observeSingleEvent(of: .value) { (snapshot) in
+            usersRef.child(owner).observeSingleEvent(of: .value) { (snapshot) in
                 guard let ss = snapshot.value as? [String:Any] else {return}
                 guard let username = ss["username"] as? String else {return}
                 self.profileImgView.loadImage(with: ss["profileImageUrl"] as! String)
@@ -71,5 +71,8 @@ class HomeFeedCollectionViewCell: UICollectionViewCell {
     }
     @IBAction func commentTapped(_ sender: UIButton) {
         delegate?.handleCommentTapped(for: self)
+    }
+    @IBAction func messagesTapped(_ sender: UIButton) {
+        delegate?.handleShowMessages(for: self)
     }
 }
