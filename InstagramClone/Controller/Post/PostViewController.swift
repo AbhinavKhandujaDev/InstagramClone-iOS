@@ -93,7 +93,7 @@ class PostViewController: UIViewController, UITextViewDelegate {
                 
                 let values = ["caption": captionText, "createdAt": creationDate, "likes" : 0, "imageUrl": url, "uid" : uid] as [String : Any]
                 
-                let postId = dbRef.child("posts").childByAutoId()
+                let postId = postsRef.childByAutoId()
                 
                 postId.updateChildValues(values, withCompletionBlock: { (error, ref) in
                     self.uploadHashtagToServer(withId: postId.key!)
@@ -102,7 +102,7 @@ class PostViewController: UIViewController, UITextViewDelegate {
                         self.uploadMentionedNotification(postId: postId.key!, text: captionText, isCommentMention: false)
                     }
                     
-                    dbRef.child("user-posts").child(loggedInUid!).updateChildValues([postId.key! : 1])
+                    userPostsRef.child(loggedInUid!).updateChildValues([postId.key! : 1])
                     self.updateUserFeeds(with: postId.key!)
                     self.navigationController?.dismiss(animated: true, completion: nil)
                 })

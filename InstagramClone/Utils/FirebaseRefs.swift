@@ -15,8 +15,9 @@ let loggedInUid = Auth.auth().currentUser?.uid
 
 let usersRef = dbRef.child("users")
 
-let postRef = dbRef.child("posts")
+let postsRef = dbRef.child("posts")
 let userFeedRef = dbRef.child("user-feed")
+let userPostsRef = dbRef.child("user-posts")
 
 let userLikesRef = dbRef.child("user-likes")
 let postLikesRef = dbRef.child("post-likes")

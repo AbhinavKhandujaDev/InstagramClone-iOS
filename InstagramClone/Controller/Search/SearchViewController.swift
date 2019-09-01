@@ -75,7 +75,7 @@ class SearchViewController: UIViewController {
     
     private func fetchPost() {
         posts.removeAll()
-        postRef.observe(.childAdded) { (ss) in
+        postsRef.observe(.childAdded) { (ss) in
             let postId = ss.key
             dbRef.fetchPost(postId: postId, completion: { (post) in
                 guard let fetchedPost = post else{return}

@@ -92,14 +92,14 @@ class User {
     }
     
     private func addPosts(followedUser: String, loggedInUser: String) {
-        dbRef.child("user-posts").child(followedUser).observeSingleEvent(of: .value) { (snapshot) in
+        userPostsRef.child(followedUser).observeSingleEvent(of: .value) { (snapshot) in
             guard let dict = snapshot.value as? [String:Any] else {return}
             userFeedRef.child(loggedInUser).updateChildValues(dict)
         }
     }
     
     private func removePosts(followedUser: String, loggedInUser: String) {
-        dbRef.child("user-posts").child(followedUser).observeSingleEvent(of: .value) { (snapshot) in
+        userPostsRef.child(followedUser).observeSingleEvent(of: .value) { (snapshot) in
             guard let dict = snapshot.value as? [String:Any] else {return}
             for key in dict.keys {
                 userFeedRef.child(loggedInUser).child(key).removeValue()

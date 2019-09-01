@@ -200,7 +200,7 @@ extension DatabaseReference {
         var dict : [String:Any] = [:]
         var post : Post?
         var count = 0
-        postRef.child(postId).observe(.childAdded, with: { (ss) in
+        postsRef.child(postId).observe(.childAdded, with: { (ss) in
             dict[ss.key] = ss.value
             post = Post(postId: postId, dict: dict)
             count += 1

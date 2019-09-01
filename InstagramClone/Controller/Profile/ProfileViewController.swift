@@ -19,9 +19,12 @@ class ProfileViewController: UIViewController {
     var user : User?
     var posts = [Post]()
     
-    fileprivate var horizontalSpace : CGFloat = 3
-    fileprivate var verticalSpace : CGFloat = 3
-    fileprivate var padding: CGFloat = 3
+    fileprivate var horizontalSpace : CGFloat = 1
+    fileprivate var verticalSpace : CGFloat = 1
+    fileprivate var padding: CGFloat = 0
+    
+    private var currentKey : String?
+    private let initialPostsCount = 10
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,20 +43,45 @@ class ProfileViewController: UIViewController {
     }
     
     fileprivate func fetchPost(uid: String = loggedInUid!) {
-        dbRef.child("user-posts").child(uid).observe(.childAdded) { (snapshot) in
-            let postId = snapshot.key
-            dbRef.child("posts").child(postId).observeSingleEvent(of: .value, with: { (ss) in
-                guard let dict = ss.value as? [String:Any] else {return}
-                let post = Post(postId: ss.key, dict: dict)
-                self.posts.append(post)
-                self.posts.sort(by: {$0.createdAt > $1.createdAt})
-                self.profileCollView.reloadData()
-            })
+        if currentKey == nil {
+            userPostsRef.child(uid).queryLimited(toLast: UInt(initialPostsCount)).observeSingleEvent(of: .value) { (snapshot) in
+                guard let allObjects = snapshot.children.allObjects as? [DataSnapshot] else {return}
+                guard let first = allObjects.first else {return}
+                
+                for object in allObjects {
+                    let postId = object.key
+                    self.fetchPost(postId: postId)
+                }
+                self.profileCollView.refreshControl?.endRefreshing()
+                self.currentKey = first.key
+            }
+        }else {
+            userPostsRef.child(uid).queryOrderedByKey().queryEnding(atValue: currentKey).queryLimited(toLast: 6).observeSingleEvent(of: .value) { (snapshot) in
+                guard let allObjects = snapshot.children.allObjects as? [DataSnapshot] else {return}
+                guard let first = allObjects.first else {return}
+                
+                for object in allObjects {
+                    let postId = object.key
+                    if postId != self.currentKey {
+                        self.fetchPost(postId: postId)
+                    }
+                }
+                self.profileCollView.refreshControl?.endRefreshing()
+                self.currentKey = first.key
+            }
+        }
+    }
+    
+    private func fetchPost(postId: String) {
+        dbRef.fetchPost(postId: postId) { (post) in
+            guard let post = post else {return}
+            self.posts.append(post)
+            self.posts.sort(by: {$0.createdAt > $1.createdAt})
+            self.profileCollView.reloadData()
         }
     }
 
     fileprivate func fetchCurrentUserData() {
-        let date = Date()
         let currentUid = loggedInUid
         usersRef.child(currentUid!).observeSingleEvent(of: .value) { (snapshot) in
             let uid = snapshot.key
@@ -61,7 +89,6 @@ class ProfileViewController: UIViewController {
             self.user = User(uid: uid, details: details)
             self.navigationItem.title = self.user?.username
             self.profileCollView.reloadData()
-            print("time taken to fetch: ",Date().timeIntervalSince(date), " seconds")
         }
     }
     
@@ -114,13 +141,19 @@ extension ProfileViewController: UICollectionViewDelegate, UICollectionViewDataS
         }, completion: nil)
     }
     
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if posts.count > initialPostsCount - 1 && indexPath.item == posts.count - 1 {
+            fetchPost()
+        }
+    }
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         return CGSize(width: view.frame.width, height: 200)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let rowWidth = (view.frame.width - (horizontalSpace*3)) - 2*padding
-        let width = rowWidth/4
+        let rowWidth = (view.frame.width - (horizontalSpace*2)) - 2*padding
+        let width = rowWidth/3
         return CGSize(width: width, height: width)
     }
     

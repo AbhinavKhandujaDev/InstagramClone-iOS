@@ -19,6 +19,7 @@ class HomeFeedViewController: UIViewController {
     fileprivate var feeds = [Post]()
     
     private var currentKey : String?
+    private let initialPostsCount = 5
     
     var viewSinglePost : Bool = false
     var post : Post?
@@ -47,6 +48,7 @@ class HomeFeedViewController: UIViewController {
     
     @objc fileprivate func handleRefresh() {
         feeds.removeAll(keepingCapacity: true)
+        currentKey = nil
         fetchPosts()
         feedCollView.reloadData()
     }
@@ -60,7 +62,7 @@ class HomeFeedViewController: UIViewController {
         guard let currentUser = loggedInUid else { return }
 
         if currentKey == nil {
-            userFeedRef.child(currentUser).queryLimited(toLast: 5).observeSingleEvent(of: .value) { (snapshot) in
+            userFeedRef.child(currentUser).queryLimited(toLast: UInt(initialPostsCount)).observeSingleEvent(of: .value) { (snapshot) in
                 guard let allObjects = snapshot.children.allObjects as? [DataSnapshot] else {return}
                 guard let first = allObjects.first else {return}
                 
@@ -133,7 +135,7 @@ extension HomeFeedViewController : UICollectionViewDataSource, UICollectionViewD
     }
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if feeds.count > 4 && indexPath.item == self.feeds.count - 1{
+        if feeds.count > initialPostsCount - 1 && indexPath.item == self.feeds.count - 1{
             fetchPosts()
         }
     }

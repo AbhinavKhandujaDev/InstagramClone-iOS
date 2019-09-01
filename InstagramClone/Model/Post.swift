@@ -54,7 +54,7 @@ class Post {
                     self.likes += 1
                     self.didLike = true
                     completion(self.likes)
-                    postRef.child(self.postId).updateChildValues(["likes" : self.likes])
+                    postsRef.child(self.postId).updateChildValues(["likes" : self.likes])
                 }
             }
         }else {
@@ -71,7 +71,7 @@ class Post {
                             self.likes -= 1
                             self.didLike = false
                             completion(self.likes)
-                            postRef.child(self.postId).updateChildValues(["likes" : self.likes])
+                            postsRef.child(self.postId).updateChildValues(["likes" : self.likes])
                         }
                     }
                 })
