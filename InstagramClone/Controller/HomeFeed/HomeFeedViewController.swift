@@ -18,6 +18,8 @@ class HomeFeedViewController: UIViewController {
     
     fileprivate var feeds = [Post]()
     
+    private var currentKey : String?
+    
     var viewSinglePost : Bool = false
     var post : Post?
     
@@ -56,15 +58,42 @@ class HomeFeedViewController: UIViewController {
             return
         }
         guard let currentUser = loggedInUid else { return }
-        userFeedRef.child(currentUser).observe(.childAdded) { (snapshot) in
-            let postId = snapshot.key
-            dbRef.fetchPost(postId: postId, completion: { (post) in
-                guard let post = post else{return}
-                self.feeds.append(post)
-                self.feeds.sort(by: {$0.createdAt > $1.createdAt})
+
+        if currentKey == nil {
+            userFeedRef.child(currentUser).queryLimited(toLast: 5).observeSingleEvent(of: .value) { (snapshot) in
+                guard let allObjects = snapshot.children.allObjects as? [DataSnapshot] else {return}
+                guard let first = allObjects.first else {return}
+                
+                for object in allObjects {
+                    let postId = object.key
+                    self.fetchPost(postId: postId)
+                }
                 self.feedCollView.refreshControl?.endRefreshing()
-                self.feedCollView.reloadData()
-            })
+                self.currentKey = first.key
+            }
+        }else {
+            userFeedRef.child(currentUser).queryOrderedByKey().queryEnding(atValue: self.currentKey).queryLimited(toLast: 6).observeSingleEvent(of: .value) { (snapshot) in
+                guard let allObjects = snapshot.children.allObjects as? [DataSnapshot] else {return}
+                guard let first = allObjects.first else {return}
+                
+                for object in allObjects {
+                    let postId = object.key
+                    if postId != self.currentKey {
+                        self.fetchPost(postId: postId)
+                    }
+                }
+                self.feedCollView.refreshControl?.endRefreshing()
+                self.currentKey = first.key
+            }
+        }
+    }
+    
+    private func fetchPost(postId: String) {
+        dbRef.fetchPost(postId: postId) { (post) in
+            guard let post = post else {return}
+            self.feeds.append(post)
+            self.feeds.sort(by: {$0.createdAt > $1.createdAt})
+            self.feedCollView.reloadData()
         }
     }
     
@@ -101,6 +130,12 @@ extension HomeFeedViewController : UICollectionViewDataSource, UICollectionViewD
         handleMentionTapped(for: cell)
         handleHashtagTapped(for: cell)
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if feeds.count > 4 && indexPath.item == self.feeds.count - 1{
+            fetchPosts()
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
