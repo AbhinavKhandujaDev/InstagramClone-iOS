@@ -29,8 +29,12 @@ let notificationsRef = dbRef.child("notifications")
 let messagesRef = dbRef.child("messages")
 let userMessagesRef = dbRef.child("user-messages")
 
+let hashtagPostsRef = dbRef.child("hashtag-post")
+
 let likeIntValue = 0
 let commentIntValue = 1
 let followIntValue = 2
+let commentMentionIntValue = 3
+let postMentionIntValue = 4
 
 

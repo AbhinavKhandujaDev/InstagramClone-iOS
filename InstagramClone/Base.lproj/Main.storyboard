@@ -243,7 +243,7 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <subviews>
                                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Instagram_logo_white" translatesAutoresizingMaskIntoConstraints="NO" id="aKJ-wl-gkL">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="267"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="320" height="267"/>
                                             <color key="backgroundColor" red="0.41476318239999999" green="0.77971059080000005" blue="0.3032218814" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         </imageView>
                                     </subviews>
@@ -435,6 +435,54 @@
             </objects>
             <point key="canvasLocation" x="-1479" y="1701"/>
         </scene>
+        <!--Hashtag View Controller-->
+        <scene sceneID="t6k-Rq-I2v">
+            <objects>
+                <collectionViewController storyboardIdentifier="HashtagViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="8oZ-Ie-XmE" customClass="HashtagViewController" customModule="InstagramClone" customModuleProvider="target" sceneMemberID="viewController">
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="YHR-hY-OfA">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="oVQ-c4-E1L">
+                            <size key="itemSize" width="292" height="252"/>
+                            <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                            <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                            <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                        </collectionViewFlowLayout>
+                        <cells>
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="hashtagCollCell" id="6ld-VZ-rju" customClass="HashtagCollectionViewCell" customModule="InstagramClone" customModuleProvider="target">
+                                <rect key="frame" x="14" y="0.0" width="292" height="252"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO">
+                                    <rect key="frame" x="0.0" y="0.0" width="292" height="252"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="HOH-l1-4LL" customClass="CustomImageView" customModule="InstagramClone" customModuleProvider="target">
+                                            <rect key="frame" x="0.0" y="0.0" width="292" height="252"/>
+                                        </imageView>
+                                    </subviews>
+                                </view>
+                                <constraints>
+                                    <constraint firstItem="HOH-l1-4LL" firstAttribute="leading" secondItem="6ld-VZ-rju" secondAttribute="leading" id="DjG-2J-BPP"/>
+                                    <constraint firstAttribute="bottom" secondItem="HOH-l1-4LL" secondAttribute="bottom" id="abU-3T-z5b"/>
+                                    <constraint firstItem="HOH-l1-4LL" firstAttribute="top" secondItem="6ld-VZ-rju" secondAttribute="top" id="ntU-Fo-NY7"/>
+                                    <constraint firstAttribute="trailing" secondItem="HOH-l1-4LL" secondAttribute="trailing" id="x8d-wD-DcR"/>
+                                </constraints>
+                                <connections>
+                                    <outlet property="postImageView" destination="HOH-l1-4LL" id="OcI-yt-hw5"/>
+                                </connections>
+                            </collectionViewCell>
+                        </cells>
+                        <connections>
+                            <outlet property="dataSource" destination="8oZ-Ie-XmE" id="qTC-2y-LXq"/>
+                            <outlet property="delegate" destination="8oZ-Ie-XmE" id="zwn-Ik-Uso"/>
+                        </connections>
+                    </collectionView>
+                </collectionViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="IOP-PG-vUg" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-2707.5" y="2396.8309859154929"/>
+        </scene>
         <!--Comment View Controller-->
         <scene sceneID="KeK-Gz-aua">
             <objects>
@@ -459,7 +507,7 @@
                                                 <constraint firstAttribute="width" secondItem="cRp-NN-7eb" secondAttribute="height" multiplier="1:1" id="mjz-0U-tLs"/>
                                             </constraints>
                                         </imageView>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zE5-rK-elt">
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zE5-rK-elt" customClass="ActiveLabel" customModule="ActiveLabel">
                                             <rect key="frame" x="64" y="8" width="248" height="68"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="60" id="Vh8-Pj-Yz5"/>

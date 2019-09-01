@@ -10,6 +10,7 @@ import UIKit
 import Firebase
 
 class PostViewController: UIViewController, UITextViewDelegate {
+    
     @IBOutlet weak var photoImageView: UIImageView!
     @IBOutlet weak var captionTextView: UITextView!
     
@@ -31,10 +32,6 @@ class PostViewController: UIViewController, UITextViewDelegate {
         }
         submitBtn.layer.cornerRadius = 5
         disableSubmitBtn = true
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
     }
     
     fileprivate func updateUserFeeds(with postId: String) {
@@ -59,6 +56,20 @@ class PostViewController: UIViewController, UITextViewDelegate {
         }
     }
     
+    private func uploadHashtagToServer(withId postId: String) {
+        guard let caption = captionTextView.text else { return }
+        let wordsArray = caption.components(separatedBy: .whitespacesAndNewlines)
+        
+        wordsArray.forEach { (word) in
+            var mutableWord = word
+            if word.hasPrefix("#") {
+                mutableWord = mutableWord.trimmingCharacters(in: .punctuationCharacters).trimmingCharacters(in: .symbols)
+                let hashtagValues = [postId:1]
+                hashtagPostsRef.child(mutableWord.lowercased()).updateChildValues(hashtagValues)
+            }
+        }
+    }
+    
     @IBAction func submitTapped(_ sender: UIButton) {
         guard let uid = loggedInUid else{return}
         guard let uploadData = image?.jpegData(compressionQuality: 0.1) else {return}
@@ -77,9 +88,20 @@ class PostViewController: UIViewController, UITextViewDelegate {
                     return
                 }
                 guard let url = picUrl?.absoluteString else{return}
-                let values = ["caption": self.captionTextView.text!, "createdAt": creationDate, "likes" : 0, "imageUrl": url, "uid" : uid] as [String : Any]
+                
+                guard let captionText = self.captionTextView.text else {return}
+                
+                let values = ["caption": captionText, "createdAt": creationDate, "likes" : 0, "imageUrl": url, "uid" : uid] as [String : Any]
+                
                 let postId = dbRef.child("posts").childByAutoId()
+                
                 postId.updateChildValues(values, withCompletionBlock: { (error, ref) in
+                    self.uploadHashtagToServer(withId: postId.key!)
+                    
+                    if captionText.contains("@") {
+                        self.uploadMentionedNotification(postId: postId.key!, text: captionText, isCommentMention: false)
+                    }
+                    
                     dbRef.child("user-posts").child(loggedInUid!).updateChildValues([postId.key! : 1])
                     self.updateUserFeeds(with: postId.key!)
                     self.navigationController?.dismiss(animated: true, completion: nil)

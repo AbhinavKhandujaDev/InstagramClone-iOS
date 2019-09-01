@@ -60,7 +60,7 @@ class Post {
         }else {
             
             userLikesRef.child(userId).child(postId).observeSingleEvent(of: .value) { (snapshot) in
-                guard let notificationId = snapshot.value as? String else {return}
+                let notificationId = snapshot.key
                 notificationsRef.child(self.ownerUid).child(notificationId).removeValue(completionBlock: { (error, ref) in
                     //remove like from user-like structure
                     userLikesRef.child(userId).child(self.postId).removeValue { (error, ref) in

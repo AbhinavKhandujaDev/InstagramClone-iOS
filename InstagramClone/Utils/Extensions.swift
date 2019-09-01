@@ -15,6 +15,54 @@ extension UIColor {
     }
 }
 
+extension UIViewController {
+    func getMentionedUser(username: String) {
+        usersRef.observe(.childAdded) { (ss) in
+            let uid = ss.key
+            guard let dict = ss.value as? [String:Any] else {return}
+            if username == dict["username"] as? String {
+                print(uid)
+                dbRef.fetchUser(uid: uid, completion: { (user) in
+                    self.pushTo(vc: ProfileViewController.self, storyboard: "Main", beforeCompletion: { (vc) -> (Bool) in
+                        vc.user = user
+                        return true
+                    }, completion: nil)
+                })
+            }
+        }
+    }
+    
+    func uploadMentionedNotification(postId: String, text: String, isCommentMention: Bool) {
+        guard let currUser = loggedInUid else { return }
+        let words = text.components(separatedBy: .whitespacesAndNewlines)
+        
+        let postType = isCommentMention ? commentMentionIntValue : postMentionIntValue
+        
+        for var word in words {
+            if word.hasPrefix("@") {
+                print("non trimmed: ",word)
+                word = word.trimmingCharacters(in: .punctuationCharacters)
+                print("trimmed: ",word)
+                print(" ")
+                
+                //checking whether the user exists
+                usersRef.observe(.childAdded) { (ss) in
+                    let uid = ss.key
+                    if currUser == uid {return}
+                    usersRef.child(uid).observeSingleEvent(of: .value, with: { (snapshot) in
+                        guard let dict = snapshot.value as? [String:Any] else {return}
+                        if word == dict["username"] as? String {
+                            let creationDate = Int(Date().timeIntervalSince1970)
+                            let notifValues : [String:Any] = ["checked" : 0, "creationDate" : creationDate, "uid" : currUser, "type" : postType, "postId" : postId]
+                            notificationsRef.child(uid).childByAutoId().updateChildValues(notifValues)
+                        }
+                    })
+                }
+            }
+        }
+    }
+}
+
 extension UIView {
     func anchor(top: NSLayoutYAxisAnchor?, left: NSLayoutXAxisAnchor?, bottom: NSLayoutYAxisAnchor?, right: NSLayoutXAxisAnchor?, paddingTop: CGFloat, paddingLeft: CGFloat, paddingBottom: CGFloat, paddingRight: CGFloat, width: CGFloat, height: CGFloat) {
         

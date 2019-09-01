@@ -40,7 +40,6 @@ class RootHomeTabBarController: UITabBarController, UITabBarControllerDelegate {
                     guard let checked = checkedSS.value as? Int else {return}
                     if checked == 0 {
                         self.tabBar.items?[3].badgeValue = "" //shows only red dot
-                        print("0")
                     }else {
                         self.tabBar.items?[3].badgeValue = nil
                     }

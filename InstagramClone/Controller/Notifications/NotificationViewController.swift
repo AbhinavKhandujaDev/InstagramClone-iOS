@@ -102,6 +102,8 @@ extension NotificationViewController: NotificationCellDelegate {
     }
     
     func handlePostTapped(for notifCell: NotificationsTableViewCell) {
+        guard let post = notifCell.notification?.post else { return }
+        if post.postId == nil {return}
         self.pushTo(vc: HomeFeedViewController.self, storyboard: "Main", beforeCompletion: { (vc) -> (Bool) in
             vc.post = notifCell.notification?.post
             vc.viewSinglePost = true

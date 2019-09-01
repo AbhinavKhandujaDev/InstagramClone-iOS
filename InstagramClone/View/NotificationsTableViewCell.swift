@@ -42,12 +42,8 @@ class NotificationsTableViewCell: UITableViewCell {
     }
     
     private func setNotifTypeView() {
-        if notification?.notifType == .Like || notification?.notifType == .Comment {
-            followButton.isHidden = true
-            postImageView.isHidden = false
-            guard let imgUrl = notification?.post?.imageUrl else {return}
-            postImageView.loadImage(with: imgUrl)
-        }else {
+        
+        if notification?.notifType == .Follow {
             followButton.isHidden = false
             postImageView.isHidden = true
             
@@ -59,6 +55,11 @@ class NotificationsTableViewCell: UITableViewCell {
                     self.followButton.setTitle("Follow", for: .normal)
                 }
             }
+        }else {
+            followButton.isHidden = true
+            postImageView.isHidden = false
+            guard let imgUrl = notification?.post?.imageUrl else {return}
+            postImageView.loadImage(with: imgUrl)
         }
     }
     

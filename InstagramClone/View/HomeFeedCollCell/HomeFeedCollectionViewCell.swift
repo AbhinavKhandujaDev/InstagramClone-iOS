@@ -7,12 +7,13 @@
 //
 
 import UIKit
+import ActiveLabel
 
 class HomeFeedCollectionViewCell: UICollectionViewCell {
 
     @IBOutlet weak var profileImgView: CustomImageView!
     @IBOutlet weak var likesLabel: UILabel!
-    @IBOutlet weak var captionLabel: UILabel!
+    @IBOutlet weak var captionLabel: ActiveLabel!
     @IBOutlet weak var timeLabel: UILabel!
     
     @IBOutlet weak var usernameLabel: UIButton!
@@ -40,7 +41,7 @@ class HomeFeedCollectionViewCell: UICollectionViewCell {
                 self.profileImgView.loadImage(with: ss["profileImageUrl"] as! String)
                 self.usernameLabel.setTitle(username, for: .normal)
             }
-            
+            captionLabel.enabledTypes = [.hashtag, .mention, .url]
             delegate?.handleConfigureLikeButton(for: self)
         }
     }

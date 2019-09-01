@@ -8,6 +8,7 @@
 
 import UIKit
 import Firebase
+import ActiveLabel
 
 class HomeFeedViewController: UIViewController {
 
@@ -50,7 +51,8 @@ class HomeFeedViewController: UIViewController {
     
     fileprivate func fetchPosts() {
         if viewSinglePost {
-            feeds.append(post!)
+            guard let post = post else {return}
+            feeds.append(post)
             return
         }
         guard let currentUser = loggedInUid else { return }
@@ -96,6 +98,8 @@ extension HomeFeedViewController : UICollectionViewDataSource, UICollectionViewD
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: feedCellIdentifier, for: indexPath) as! HomeFeedCollectionViewCell
         cell.post = feeds[indexPath.row]
         cell.delegate = self
+        handleMentionTapped(for: cell)
+        handleHashtagTapped(for: cell)
         return cell
     }
     
@@ -176,4 +180,21 @@ extension HomeFeedViewController : FeedCellDelegate {
             return true
         }, completion: nil)
     }
+    
+    private func handleHashtagTapped(for feedCell: HomeFeedCollectionViewCell) {
+        feedCell.captionLabel.handleHashtagTap { (hashtag) in
+            
+            self.pushTo(vc: HashtagViewController.self, storyboard: "Main", beforeCompletion: { (vc) -> (Bool) in
+                vc.hashtag = hashtag
+                return true
+            }, completion: nil)
+        }
+    }
+    
+    private func handleMentionTapped(for feedCell: HomeFeedCollectionViewCell) {
+        feedCell.captionLabel.handleMentionTap { (username) in
+            self.getMentionedUser(username: username)
+        }
+    }
+
 }

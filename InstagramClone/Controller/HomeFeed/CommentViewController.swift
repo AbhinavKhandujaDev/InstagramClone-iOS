@@ -87,6 +87,9 @@ class CommentViewController: UITableViewController {
         let values : [String : Any] = ["commentText": text, "creationDate": creationDate, "user": uid]
         commentsRef.child(post.postId).childByAutoId().updateChildValues(values) { (error, ref) in
             self.uploadCommentNotifToServer()
+            if text.contains("@") {
+                self.uploadMentionedNotification(postId: self.post.postId, text: text, isCommentMention: true)
+            }
             self.commentTextField.text = nil
         }
     }
@@ -114,6 +117,21 @@ class CommentViewController: UITableViewController {
         let notifRef = notificationsRef.child(post.ownerUid).childByAutoId()
         notifRef.updateChildValues(values)
     }
+    
+    private func handleHashtagTapped(for cell: CommentTableViewCell) {
+        cell.commentLabel.handleHashtagTap { (hashtag) in
+            self.pushTo(vc: HashtagViewController.self, storyboard: "Main", beforeCompletion: { (vc) -> (Bool) in
+                vc.hashtag = hashtag
+                return true
+            }, completion: nil)
+        }
+    }
+    
+    private func handleMentionTapped(for cell: CommentTableViewCell) {
+        cell.commentLabel.handleMentionTap { (username) in
+            self.getMentionedUser(username: username)
+        }
+    }
 }
 
 extension CommentViewController {
@@ -124,6 +142,8 @@ extension CommentViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: comentCellIdentifier, for: indexPath) as! CommentTableViewCell
         cell.comment = comments[indexPath.row]
+        handleHashtagTapped(for: cell)
+        handleMentionTapped(for: cell)
         return cell
     }
     

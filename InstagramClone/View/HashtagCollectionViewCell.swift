@@ -1,15 +1,15 @@
 //
-//  SearchCollectionViewCell.swift
+//  HashtagCollectionViewCell.swift
 //  InstagramClone
 //
-//  Created by abhinav khanduja on 23/08/19.
+//  Created by abhinav khanduja on 30/08/19.
 //  Copyright © 2019 abhinav khanduja. All rights reserved.
 //
 
 import UIKit
 
-class SearchCollectionViewCell: UICollectionViewCell {
-
+class HashtagCollectionViewCell: UICollectionViewCell {
+    
     @IBOutlet weak var postImageView: CustomImageView!
     
     var post : Post? {
@@ -18,9 +18,8 @@ class SearchCollectionViewCell: UICollectionViewCell {
             postImageView.loadImage(with: imageUrl)
         }
     }
-    
     override func awakeFromNib() {
         super.awakeFromNib()
+//        postImageView.backgroundColor = UIColor.lightGray
     }
-
 }
