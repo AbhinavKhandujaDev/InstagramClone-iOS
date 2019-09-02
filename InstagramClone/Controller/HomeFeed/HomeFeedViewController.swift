@@ -19,7 +19,8 @@ class HomeFeedViewController: UIViewController {
     fileprivate var feeds = [Post]()
     
     private var currentKey : String?
-    private let initialPostsCount = 5
+    private let initialPostsCount: UInt = 5
+    private let furtherPostsCount: UInt = 6
     
     var viewSinglePost : Bool = false
     var post : Post?
@@ -61,38 +62,10 @@ class HomeFeedViewController: UIViewController {
         }
         guard let currentUser = loggedInUid else { return }
 
-        if currentKey == nil {
-            userFeedRef.child(currentUser).queryLimited(toLast: UInt(initialPostsCount)).observeSingleEvent(of: .value) { (snapshot) in
-                guard let allObjects = snapshot.children.allObjects as? [DataSnapshot] else {return}
-                guard let first = allObjects.first else {return}
-                
-                for object in allObjects {
-                    let postId = object.key
-                    self.fetchPost(postId: postId)
-                }
-                self.feedCollView.refreshControl?.endRefreshing()
-                self.currentKey = first.key
-            }
-        }else {
-            userFeedRef.child(currentUser).queryOrderedByKey().queryEnding(atValue: self.currentKey).queryLimited(toLast: 6).observeSingleEvent(of: .value) { (snapshot) in
-                guard let allObjects = snapshot.children.allObjects as? [DataSnapshot] else {return}
-                guard let first = allObjects.first else {return}
-                
-                for object in allObjects {
-                    let postId = object.key
-                    if postId != self.currentKey {
-                        self.fetchPost(postId: postId)
-                    }
-                }
-                self.feedCollView.refreshControl?.endRefreshing()
-                self.currentKey = first.key
-            }
-        }
-    }
-    
-    private func fetchPost(postId: String) {
-        dbRef.fetchPost(postId: postId) { (post) in
-            guard let post = post else {return}
+        self.fetchPosts(databaseRef: userPostsRef.child(currentUser), currentKey: currentKey, initialCount: initialPostsCount, furtherCount: furtherPostsCount, postIdsFetched: { (first) in
+            self.feedCollView.refreshControl?.endRefreshing()
+            self.currentKey = first.key
+        }) { (post) in
             self.feeds.append(post)
             self.feeds.sort(by: {$0.createdAt > $1.createdAt})
             self.feedCollView.reloadData()

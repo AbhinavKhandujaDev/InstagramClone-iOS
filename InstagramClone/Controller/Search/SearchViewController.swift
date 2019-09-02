@@ -21,6 +21,10 @@ class SearchViewController: UIViewController {
     private var isSearching = false
     private var collectionViewEnabled = false
     
+    private var currentKey : String?
+    private let initialPostsCount : UInt = 21
+    private let furtherPostsCount : UInt = 10
+    
     private var collectionView : UICollectionView!
     
     private let searchBar = UISearchBar()
@@ -32,7 +36,7 @@ class SearchViewController: UIViewController {
         configureSearchBar()
         searchTableView.register(UINib(nibName: "SearchTableViewCell", bundle: nil), forCellReuseIdentifier: searchUserIdentifier)
         fetchUsers()
-        fetchPost()
+        fetchPosts()
         configureCollectionView()
     }
     
@@ -73,15 +77,14 @@ class SearchViewController: UIViewController {
         }
     }
     
-    private func fetchPost() {
-        posts.removeAll()
-        postsRef.observe(.childAdded) { (ss) in
-            let postId = ss.key
-            dbRef.fetchPost(postId: postId, completion: { (post) in
-                guard let fetchedPost = post else{return}
-                self.posts.append(fetchedPost)
-                self.collectionView.reloadData()
-            })
+    private func fetchPosts() {
+        self.fetchPosts(databaseRef: postsRef, currentKey: currentKey, initialCount: initialPostsCount, furtherCount: furtherPostsCount, postIdsFetched: { (first) in
+            self.collectionView.refreshControl?.endRefreshing()
+            self.currentKey = first.key
+        }) { (post) in
+            self.posts.append(post)
+            self.posts.sort(by: {$0.createdAt > $1.createdAt})
+            self.collectionView.reloadData()
         }
     }
 
@@ -137,6 +140,12 @@ extension SearchViewController : UICollectionViewDelegate, UICollectionViewDataS
             vc.viewSinglePost = true
             return true
         }, completion: nil)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if posts.count > initialPostsCount - 1 && indexPath.item == posts.count - 1 {
+            fetchPosts()
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {

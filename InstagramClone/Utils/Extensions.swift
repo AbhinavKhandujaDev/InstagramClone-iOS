@@ -21,7 +21,6 @@ extension UIViewController {
             let uid = ss.key
             guard let dict = ss.value as? [String:Any] else {return}
             if username == dict["username"] as? String {
-                print(uid)
                 dbRef.fetchUser(uid: uid, completion: { (user) in
                     self.pushTo(vc: ProfileViewController.self, storyboard: "Main", beforeCompletion: { (vc) -> (Bool) in
                         vc.user = user
@@ -40,11 +39,8 @@ extension UIViewController {
         
         for var word in words {
             if word.hasPrefix("@") {
-                print("non trimmed: ",word)
                 word = word.trimmingCharacters(in: .punctuationCharacters)
-                print("trimmed: ",word)
-                print(" ")
-                
+            
                 //checking whether the user exists
                 usersRef.observe(.childAdded) { (ss) in
                     let uid = ss.key
@@ -61,6 +57,44 @@ extension UIViewController {
             }
         }
     }
+    
+    func fetchPosts(databaseRef: DatabaseReference, currentKey: String?, initialCount: UInt, furtherCount: UInt, postIdsFetched: @escaping ((DataSnapshot)->()), postFetched: @escaping ((Post)->())) {
+        if currentKey == nil {
+            databaseRef.queryLimited(toLast: initialCount).observeSingleEvent(of: .value) { (snapshot) in
+                guard let allObjects = snapshot.children.allObjects as? [DataSnapshot] else {return}
+                guard let first = allObjects.first else {return}
+                for object in allObjects {
+                    let postId = object.key
+                    self.fetchPost(postId: postId, completion: { (post) in
+                        postFetched(post)
+                    })
+                }
+                postIdsFetched(first)
+            }
+        }else {
+            databaseRef.queryOrderedByKey().queryEnding(atValue: currentKey).queryLimited(toLast: furtherCount).observeSingleEvent(of: .value) { (snapshot) in
+                guard let allObjects = snapshot.children.allObjects as? [DataSnapshot] else {return}
+                guard let first = allObjects.first else {return}
+                
+                for object in allObjects {
+                    let postId = object.key
+                    if postId == currentKey {continue}
+                    self.fetchPost(postId: postId, completion: { (post) in
+                        postFetched(post)
+                    })
+                }
+                postIdsFetched(first)
+            }
+        }
+    }
+    
+    private func fetchPost(postId: String, completion: @escaping ((Post)->())) {
+        dbRef.fetchPost(postId: postId) { (post) in
+            guard let post = post else {return}
+            completion(post)
+        }
+    }
+    
 }
 
 extension UIView {

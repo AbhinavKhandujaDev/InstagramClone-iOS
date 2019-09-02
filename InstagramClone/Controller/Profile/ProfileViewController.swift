@@ -24,7 +24,8 @@ class ProfileViewController: UIViewController {
     fileprivate var padding: CGFloat = 0
     
     private var currentKey : String?
-    private let initialPostsCount = 10
+    private let initialPostsCount: UInt = 10
+    private let furtherPostsCount: UInt = 6
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -43,44 +44,16 @@ class ProfileViewController: UIViewController {
     }
     
     fileprivate func fetchPost(uid: String = loggedInUid!) {
-        if currentKey == nil {
-            userPostsRef.child(uid).queryLimited(toLast: UInt(initialPostsCount)).observeSingleEvent(of: .value) { (snapshot) in
-                guard let allObjects = snapshot.children.allObjects as? [DataSnapshot] else {return}
-                guard let first = allObjects.first else {return}
-                
-                for object in allObjects {
-                    let postId = object.key
-                    self.fetchPost(postId: postId)
-                }
-                self.profileCollView.refreshControl?.endRefreshing()
-                self.currentKey = first.key
-            }
-        }else {
-            userPostsRef.child(uid).queryOrderedByKey().queryEnding(atValue: currentKey).queryLimited(toLast: 6).observeSingleEvent(of: .value) { (snapshot) in
-                guard let allObjects = snapshot.children.allObjects as? [DataSnapshot] else {return}
-                guard let first = allObjects.first else {return}
-                
-                for object in allObjects {
-                    let postId = object.key
-                    if postId != self.currentKey {
-                        self.fetchPost(postId: postId)
-                    }
-                }
-                self.profileCollView.refreshControl?.endRefreshing()
-                self.currentKey = first.key
-            }
-        }
-    }
-    
-    private func fetchPost(postId: String) {
-        dbRef.fetchPost(postId: postId) { (post) in
-            guard let post = post else {return}
+        self.fetchPosts(databaseRef: userPostsRef.child(uid), currentKey: currentKey, initialCount: initialPostsCount, furtherCount: furtherPostsCount, postIdsFetched: { (first) in
+            self.profileCollView.refreshControl?.endRefreshing()
+            self.currentKey = first.key
+        }) { (post) in
             self.posts.append(post)
             self.posts.sort(by: {$0.createdAt > $1.createdAt})
             self.profileCollView.reloadData()
         }
     }
-
+    
     fileprivate func fetchCurrentUserData() {
         let currentUid = loggedInUid
         usersRef.child(currentUid!).observeSingleEvent(of: .value) { (snapshot) in
