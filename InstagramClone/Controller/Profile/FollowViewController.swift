@@ -13,7 +13,6 @@ class FollowViewController: UIViewController {
     
     @IBOutlet weak var followTableView: UITableView!
     
-//    fileprivate let followCellIdentifier = "followCell"
     fileprivate let searchUserIdentifier = "searchUserCell"
     
     fileprivate var users = [User]()
@@ -38,6 +37,10 @@ class FollowViewController: UIViewController {
         }
     }
     
+    private var currentKey : String?
+    private let initialPostsCount: UInt = 20
+    private let furtherPostsCount: UInt = 10
+    
     var viewingMode : ViewingMode!
     
     override func viewDidLoad() {
@@ -53,7 +56,6 @@ class FollowViewController: UIViewController {
         }
         
         fetchUsers()
-        print(viewingMode.rawValue)
     }
     
     fileprivate func getDatabaseReference() -> DatabaseReference? {
@@ -67,21 +69,13 @@ class FollowViewController: UIViewController {
     
     fileprivate func fetchUsers() {
         guard let ref = getDatabaseReference() else { return }
-        ref.child(uid!).observeSingleEvent(of: .value) { (snapshot) in
-            guard let allIds = snapshot.children.allObjects as? [DataSnapshot] else {return}
-            allIds.forEach({ (usrid) in
-                let userId = usrid.key
-                usersRef.child(userId).observeSingleEvent(of: .value, with: { (objSnapshot) in
-                    guard let details = objSnapshot.value as? [String:AnyObject] else {return}
-                    let usr = User(uid: objSnapshot.key, details: details)
-                    
-                    self.users.append(usr)
-                    self.followTableView.reloadData()
-                })
-            })
+        self.fetchUsers(databaseRef: ref.child(uid!), currentKey: currentKey, initialCount: initialPostsCount, furtherCount: furtherPostsCount, lastUserId: { (lastId) in
+            self.currentKey = lastId.key
+        }) { (user) in
+            self.users.append(user)
+            self.followTableView.reloadData()
         }
     }
-    
 }
 
 extension FollowViewController : UITableViewDataSource, UITableViewDelegate {
@@ -103,6 +97,12 @@ extension FollowViewController : UITableViewDataSource, UITableViewDelegate {
             vc.user = self.users[indexPath.row]
             return true
         }, completion: nil)
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if users.count > initialPostsCount - 1 && indexPath.item == self.users.count - 1{
+            fetchUsers()
+        }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

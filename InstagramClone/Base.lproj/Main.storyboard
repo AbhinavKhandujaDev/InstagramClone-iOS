@@ -163,6 +163,7 @@
                                 <rect key="frame" x="24" y="144" width="272" height="40"/>
                                 <color key="backgroundColor" red="0.066666666669999999" green="0.60392156860000001" blue="0.92941176469999998" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
+                                    <constraint firstAttribute="width" constant="272" id="7UR-1b-aVm"/>
                                     <constraint firstAttribute="height" constant="40" id="HTd-18-AYZ"/>
                                 </constraints>
                                 <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -177,12 +178,11 @@
                             <constraint firstItem="dfB-m2-SBB" firstAttribute="trailing" secondItem="fie-z3-dgj" secondAttribute="trailing" constant="12" id="55T-Jx-5Pm"/>
                             <constraint firstItem="fie-z3-dgj" firstAttribute="leading" secondItem="HGD-2d-Dvt" secondAttribute="trailing" constant="12" id="X0t-AO-JlF"/>
                             <constraint firstItem="fie-z3-dgj" firstAttribute="height" secondItem="HGD-2d-Dvt" secondAttribute="height" id="gnN-HQ-HU8"/>
-                            <constraint firstItem="dfB-m2-SBB" firstAttribute="trailing" secondItem="zPf-Pe-JdU" secondAttribute="trailing" constant="24" id="lbC-dY-mbc"/>
                             <constraint firstItem="HGD-2d-Dvt" firstAttribute="top" secondItem="dfB-m2-SBB" secondAttribute="top" constant="12" id="nFE-bS-z2A"/>
-                            <constraint firstItem="zPf-Pe-JdU" firstAttribute="leading" secondItem="dfB-m2-SBB" secondAttribute="leading" constant="24" id="qXy-ee-8xD"/>
                             <constraint firstItem="fie-z3-dgj" firstAttribute="centerY" secondItem="HGD-2d-Dvt" secondAttribute="centerY" id="uMk-Si-rZI"/>
                             <constraint firstItem="zPf-Pe-JdU" firstAttribute="top" secondItem="fie-z3-dgj" secondAttribute="bottom" constant="12" id="wWe-3h-lOE"/>
                             <constraint firstItem="HGD-2d-Dvt" firstAttribute="leading" secondItem="dfB-m2-SBB" secondAttribute="leading" constant="12" id="x9N-t7-bv5"/>
+                            <constraint firstItem="zPf-Pe-JdU" firstAttribute="centerX" secondItem="dfB-m2-SBB" secondAttribute="centerX" id="y0e-JU-gXp"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="dfB-m2-SBB"/>
                     </view>
