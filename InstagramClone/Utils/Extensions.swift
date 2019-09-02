@@ -58,7 +58,7 @@ extension UIViewController {
         }
     }
     
-    func fetchPosts(databaseRef: DatabaseReference, currentKey: String?, initialCount: UInt, furtherCount: UInt, postIdsFetched: @escaping ((DataSnapshot)->()), postFetched: @escaping ((Post)->())) {
+    func fetchPosts(databaseRef: DatabaseReference, currentKey: String?, initialCount: UInt, furtherCount: UInt, lastPostId: @escaping ((DataSnapshot)->()), postFetched: @escaping ((Post)->())) {
         if currentKey == nil {
             databaseRef.queryLimited(toLast: initialCount).observeSingleEvent(of: .value) { (snapshot) in
                 guard let allObjects = snapshot.children.allObjects as? [DataSnapshot] else {return}
@@ -69,7 +69,7 @@ extension UIViewController {
                         postFetched(post)
                     })
                 }
-                postIdsFetched(first)
+                lastPostId(first)
             }
         }else {
             databaseRef.queryOrderedByKey().queryEnding(atValue: currentKey).queryLimited(toLast: furtherCount).observeSingleEvent(of: .value) { (snapshot) in
@@ -83,7 +83,7 @@ extension UIViewController {
                         postFetched(post)
                     })
                 }
-                postIdsFetched(first)
+                lastPostId(first)
             }
         }
     }
@@ -92,6 +92,43 @@ extension UIViewController {
         dbRef.fetchPost(postId: postId) { (post) in
             guard let post = post else {return}
             completion(post)
+        }
+    }
+    
+    func fetchUsers(databaseRef: DatabaseReference, currentKey: String?, initialCount: UInt, furtherCount: UInt, lastUserId: @escaping ((DataSnapshot)->()), userFetched: @escaping ((User)->())) {
+        if currentKey == nil {
+            databaseRef.queryLimited(toLast: initialCount).observeSingleEvent(of: .value) { (snapshot) in
+                guard let allObjects = snapshot.children.allObjects as? [DataSnapshot] else {return}
+                guard let first = allObjects.first else {return}
+                for object in allObjects {
+                    let postId = object.key
+                    self.fetchUser(userId: postId, completion: { (user) in
+                        userFetched(user)
+                    })
+                }
+                lastUserId(first)
+            }
+        }else {
+            databaseRef.queryOrderedByKey().queryEnding(atValue: currentKey).queryLimited(toLast: furtherCount).observeSingleEvent(of: .value) { (snapshot) in
+                guard let allObjects = snapshot.children.allObjects as? [DataSnapshot] else {return}
+                guard let first = allObjects.first else {return}
+                
+                for object in allObjects {
+                    let postId = object.key
+                    if postId == currentKey {continue}
+                    self.fetchUser(userId: postId, completion: { (user) in
+                        userFetched(user)
+                    })
+                }
+                lastUserId(first)
+            }
+        }
+    }
+    
+    private func fetchUser(userId: String, completion: @escaping ((User)->())) {
+        dbRef.fetchUser(uid: userId) { (user) in
+            let user = user
+            completion(user)
         }
     }
     

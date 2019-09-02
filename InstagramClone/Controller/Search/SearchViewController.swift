@@ -21,9 +21,13 @@ class SearchViewController: UIViewController {
     private var isSearching = false
     private var collectionViewEnabled = false
     
-    private var currentKey : String?
+    private var postCurrentKey : String?
     private let initialPostsCount : UInt = 21
     private let furtherPostsCount : UInt = 10
+    
+    private var userCurrentKey : String?
+    private let initialUsersCount : UInt = 21
+    private let furtherUsersCount : UInt = 10
     
     private var collectionView : UICollectionView!
     
@@ -34,9 +38,11 @@ class SearchViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         configureSearchBar()
+        
         searchTableView.register(UINib(nibName: "SearchTableViewCell", bundle: nil), forCellReuseIdentifier: searchUserIdentifier)
-        fetchUsers()
+        
         fetchPosts()
+        
         configureCollectionView()
     }
     
@@ -67,32 +73,30 @@ class SearchViewController: UIViewController {
     }
     
     fileprivate func fetchUsers() {
-        usersRef.observe(.childAdded) { (snapshot) in
-            guard let details = snapshot.value as? [String:AnyObject] else {return}
-            let uid = snapshot.key
-            
-            let usr = User(uid: uid, details: details)
-            self.users.append(usr)
+        self.fetchUsers(databaseRef: usersRef, currentKey: userCurrentKey, initialCount: initialUsersCount, furtherCount: furtherUsersCount, lastUserId: { (lastId) in
+            self.userCurrentKey = lastId.key
+        }) { (user) in
+            self.users.append(user)
             self.searchTableView.reloadData()
         }
     }
     
     private func fetchPosts() {
-        self.fetchPosts(databaseRef: postsRef, currentKey: currentKey, initialCount: initialPostsCount, furtherCount: furtherPostsCount, postIdsFetched: { (first) in
-            self.collectionView.refreshControl?.endRefreshing()
-            self.currentKey = first.key
+        self.fetchPosts(databaseRef: postsRef, currentKey: postCurrentKey, initialCount: initialPostsCount, furtherCount: furtherPostsCount, lastPostId: { (lastId) in
+            self.postCurrentKey = lastId.key
         }) { (post) in
             self.posts.append(post)
             self.posts.sort(by: {$0.createdAt > $1.createdAt})
             self.collectionView.reloadData()
         }
     }
-
+    
 }
 
 extension SearchViewController : UISearchBarDelegate {
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         searchBar.showsCancelButton = true
+        fetchUsers()
         collectionView.isHidden = true
         collectionViewEnabled = false
     }
@@ -179,6 +183,12 @@ extension SearchViewController : UITableViewDelegate, UITableViewDataSource {
         }
         cell.delegate = self
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if users.count > initialUsersCount - 1 && indexPath.row == users.count - 1 {
+            fetchUsers()
+        }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

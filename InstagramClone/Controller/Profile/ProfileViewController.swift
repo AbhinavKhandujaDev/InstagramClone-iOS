@@ -44,7 +44,7 @@ class ProfileViewController: UIViewController {
     }
     
     fileprivate func fetchPost(uid: String = loggedInUid!) {
-        self.fetchPosts(databaseRef: userPostsRef.child(uid), currentKey: currentKey, initialCount: initialPostsCount, furtherCount: furtherPostsCount, postIdsFetched: { (first) in
+        self.fetchPosts(databaseRef: userPostsRef.child(uid), currentKey: currentKey, initialCount: initialPostsCount, furtherCount: furtherPostsCount, lastPostId: { (first) in
             self.profileCollView.refreshControl?.endRefreshing()
             self.currentKey = first.key
         }) { (post) in

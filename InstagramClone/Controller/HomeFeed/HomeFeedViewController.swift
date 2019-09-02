@@ -62,7 +62,7 @@ class HomeFeedViewController: UIViewController {
         }
         guard let currentUser = loggedInUid else { return }
 
-        self.fetchPosts(databaseRef: userPostsRef.child(currentUser), currentKey: currentKey, initialCount: initialPostsCount, furtherCount: furtherPostsCount, postIdsFetched: { (first) in
+        self.fetchPosts(databaseRef: userPostsRef.child(currentUser), currentKey: currentKey, initialCount: initialPostsCount, furtherCount: furtherPostsCount, lastPostId: { (first) in
             self.feedCollView.refreshControl?.endRefreshing()
             self.currentKey = first.key
         }) { (post) in
@@ -206,5 +206,4 @@ extension HomeFeedViewController : FeedCellDelegate {
             self.getMentionedUser(username: username)
         }
     }
-
 }
