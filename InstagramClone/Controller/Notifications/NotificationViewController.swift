@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 
 class NotificationViewController: UITableViewController {
     
@@ -15,6 +16,10 @@ class NotificationViewController: UITableViewController {
     private var notifs : [Notification] = []
     
     private var timer : Timer?
+    
+    private var currentKey : String?
+    private let initialPostsCount: UInt = 9
+    private let furtherPostsCount: UInt = 6
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,26 +39,51 @@ class NotificationViewController: UITableViewController {
     
     private func fetchNotifs() {
         guard let currUser = loggedInUid else { return }
-        notificationsRef.child(currUser).observe(.childAdded) { (ss) in
-            let id = ss.key
-            guard let dict = ss.value as? [String:Any] else {return}
-            guard let uid = dict["uid"] as? String else{return}
-            
-            dbRef.fetchUser(uid: uid, completion: { (user) in
-                var notif : Notification?
-                if let postId = dict["postId"] as? String {
-                    dbRef.fetchPost(postId: postId, completion: { (post) in
-                        notif = Notification(user: user, post: post, dict: dict)
-                        self.notifs.append(notif!)
-                        self.handleReloadTable()
-                    })
-                }else {
-                    notif = Notification(user: user, dict: dict)
+
+        if currentKey == nil {
+            notificationsRef.child(currUser).queryLimited(toLast: initialPostsCount).observeSingleEvent(of: .value) { (snapshot) in
+                guard let allObjects = snapshot.children.allObjects as? [DataSnapshot] else {return}
+                let first = allObjects.first
+                
+                for object in allObjects {
+                    guard let dict = object.value as? [String:Any] else {return}
+                    guard let uid = dict["uid"] as? String else {return}
+                    self.fetchNotif(uid: uid, dict: dict)
+                    notificationsRef.child(currUser).child(object.key).child("checked").setValue(1)
+                }
+                self.currentKey = first?.key
+            }
+        }else {
+            notificationsRef.child(currUser).queryOrderedByKey().queryEnding(atValue: currentKey).queryLimited(toLast: furtherPostsCount).observeSingleEvent(of: .value) { (snapshot) in
+                guard let allObjects = snapshot.children.allObjects as? [DataSnapshot] else {return}
+                let first = allObjects.first
+                
+                for object in allObjects {
+                    guard let dict = object.value as? [String:Any] else {return}
+                    guard let uid = dict["uid"] as? String else {return}
+                    if object.key == self.currentKey {continue}
+                    self.fetchNotif(uid: uid, dict: dict)
+                    notificationsRef.child(currUser).child(object.key).child("checked").setValue(1)
+                }
+                self.currentKey = first?.key
+            }
+        }
+    }
+    
+    private func fetchNotif(uid: String, dict: [String:Any]) {
+        dbRef.fetchUser(uid: uid) { (user) in
+            var notif : Notification?
+            if let postId = dict["postId"] as? String {
+                dbRef.fetchPost(postId: postId, completion: { (post) in
+                    notif = Notification(user: user, post: post, dict: dict)
                     self.notifs.append(notif!)
                     self.handleReloadTable()
-                }
-            })
-            notificationsRef.child(currUser).child(id).child("checked").setValue(1)
+                })
+            }else {
+                notif = Notification(user: user, dict: dict)
+                self.notifs.append(notif!)
+                self.handleReloadTable()
+            }
         }
     }
 }
@@ -77,6 +107,12 @@ extension NotificationViewController {
             vc.user = notif.user!
             return true
         }, completion: nil)
+    }
+    
+    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if notifs.count > initialPostsCount - 1 && indexPath.row == self.notifs.count - 1 {
+            fetchNotifs()
+        }
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
