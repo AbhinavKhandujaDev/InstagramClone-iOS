@@ -34,9 +34,7 @@ class HomeFeedViewController: UIViewController {
         refreshCtrl.addTarget(self, action: #selector(handleRefresh), for: .valueChanged)
         feedCollView.refreshControl = refreshCtrl
         
-        navigationItem.rightBarButtonItem?.action = #selector(showMessagesTapped(_:))
-        
-        self.navigationItem.title = "Home"
+        self.navigationItem.title = !viewSinglePost ? "Home" : "Post"
     }
     
     @objc fileprivate func handleRefresh() {
@@ -64,7 +62,7 @@ class HomeFeedViewController: UIViewController {
         }
     }
 
-    @objc private func showMessagesTapped(_ sender: Any) {
+    @IBAction func showMessagesTapped(_ sender: UIBarButtonItem) {
         self.pushTo(vc: MessagesViewController.self, storyboard: "Main", beforeCompletion: { (vc) -> (Bool) in
             return true
         }, completion: nil)
@@ -122,15 +120,24 @@ extension HomeFeedViewController : FeedCellDelegate {
     
     func handleOptionsTapped(for feedCell: HomeFeedCollectionViewCell) {
         guard let post = feedCell.post else { return }
-//        let alertController = UIAlertController(title: "Options", message: nil, preferredStyle: .actionSheet)
-//        alertController.addAction(UIAlertAction(title: "Delete Post", style: .destructive, handler: { (action) in
-//            post.deletePost()
-//        }))
-//        alertController.addAction(UIAlertAction(title: "Edit Post", style: .default, handler: { (action) in
-//            print("edit post")
-//        }))
-//        alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-//        self.present(alertController, animated: true, completion: nil)
+        let alertController = UIAlertController(title: "Options", message: nil, preferredStyle: .actionSheet)
+        
+        alertController.addAction(UIAlertAction(title: "Delete Post", style: .destructive, handler: { (action) in
+            post.deletePost()
+            if !self.viewSinglePost {
+                self.handleRefresh()
+            }else {
+                self.navigationController?.popToRootViewController(animated: true)
+            }
+        }))
+        
+        alertController.addAction(UIAlertAction(title: "Edit Post", style: .default, handler: { (action) in
+            print("edit post")
+        }))
+        
+        alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        
+        self.present(alertController, animated: true, completion: nil)
     }
     
     func handleLikeTapped(for feedCell: HomeFeedCollectionViewCell) {

@@ -392,7 +392,7 @@
                         <subviews>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="vzv-iq-W2t">
                                 <rect key="frame" x="0.0" y="64" width="320" height="455"/>
-                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="klb-sA-ceg">
                                     <size key="itemSize" width="50" height="50"/>
                                     <size key="headerReferenceSize" width="0.0" height="0.0"/>
@@ -425,7 +425,11 @@
                         <viewLayoutGuide key="safeArea" id="cQu-89-4jI"/>
                     </view>
                     <navigationItem key="navigationItem" id="5Ju-2Y-yIE">
-                        <barButtonItem key="rightBarButtonItem" title="Item" image="send2" id="0Ur-i8-BdO"/>
+                        <barButtonItem key="rightBarButtonItem" title="Item" image="send2" id="0Ur-i8-BdO">
+                            <connections>
+                                <action selector="showMessagesTapped:" destination="z2G-T8-pax" id="vjw-ig-EaO"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <connections>
                         <outlet property="feedCollView" destination="vzv-iq-W2t" id="wYp-rY-6j2"/>

@@ -44,16 +44,14 @@ class Post {
     }
     
     func adjustLikes(addLike: Bool, completion: @escaping((Int)->())) {
-        guard let userId = Auth.auth().currentUser?.uid else { return }
+        guard let currentUserId = Auth.auth().currentUser?.uid else { return }
         if addLike {
-            print("adding like")
             //update like from user-like structure
             let value = [postId : 1]
-            userLikesRef.child(userId).updateChildValues(value) { (error, ref) in
+            userLikesRef.child(currentUserId).updateChildValues(value) { (error, ref) in
                 self.sendLikeNotifToServer()
-                
                 //update like count
-                postLikesRef.child(self.postId).updateChildValues([userId : 1]) { (error, ref) in
+                postLikesRef.child(self.postId).updateChildValues([currentUserId : 1]) { (error, ref) in
                     self.likes += 1
                     self.didLike = true
                     completion(self.likes)
@@ -61,14 +59,14 @@ class Post {
                 }
             }
         }else {
-            userLikesRef.child(userId).child(postId).observeSingleEvent(of: .value) { (snapshot) in
+            userLikesRef.child(currentUserId).child(postId).observeSingleEvent(of: .value) { (snapshot) in
                 let notificationId = snapshot.key
                 notificationsRef.child(self.ownerUid).child(notificationId).removeValue(completionBlock: { (error, ref) in
                     //remove like from user-like structure
-                    userLikesRef.child(userId).child(self.postId).removeValue { (error, ref) in
+                    userLikesRef.child(currentUserId).child(self.postId).removeValue { (error, ref) in
                         
                         //remove like from post-like structure
-                        postLikesRef.child(self.postId).child(userId).removeValue { (error, ref) in
+                        postLikesRef.child(self.postId).child(currentUserId).removeValue { (error, ref) in
                             guard self.likes > 0 else {return}
                             self.likes -= 1
                             self.didLike = false
@@ -81,16 +79,14 @@ class Post {
         }
     }
     
-    func sendLikeNotifToServer() {
+    private func sendLikeNotifToServer() {
         guard let currUser = Auth.auth().currentUser?.uid else { return }
-        if currUser == self.ownerUid {return}
         let creationDate = Int(Date().timeIntervalSince1970)
-        let values : [String:Any] = ["checked" : 0, "creationDate" : creationDate, "uid" : currUser, "type" : likeIntValue, "postId" : postId]
-        
         let notifRef = notificationsRef.child(self.ownerUid).childByAutoId()
-        notifRef.updateChildValues(values) { (error, ref) in
-            userLikesRef.child(currUser).child(self.postId).setValue(notifRef.key)
-        }
+        userLikesRef.child(currUser).child(self.postId).setValue(notifRef.key)
+        if currUser == self.ownerUid {return}
+        let values : [String:Any] = ["checked" : 0, "creationDate" : creationDate, "uid" : currUser, "type" : likeIntValue, "postId" : postId]
+        notifRef.updateChildValues(values)
     }
     
     func deletePost() {
@@ -104,6 +100,7 @@ class Post {
             let followerUid = snapshot.key
             userFeedRef.child(followerUid).child(self.postId).removeValue()
         }
+        
         //deleting from own user-feed structure
         userFeedRef.child(currUser).child(self.postId).removeValue()
         
@@ -114,10 +111,28 @@ class Post {
         postLikesRef.child(postId).observe(.childAdded) { (snapshot) in
             let userId = snapshot.key
             userLikesRef.child(userId).child(self.postId).observe(.childAdded, with: { (snapshot) in
+                
                 //removing post from notifications
-//                guard let notificationId = snapshot.value as? String else {return}
-//                notificationsRef.child(ownerUid)
+                guard let notificationId = snapshot.value as? String else {return}
+                notificationsRef.child(self.ownerUid).child(notificationId).removeValue(completionBlock: { (err, ref) in
+                    postLikesRef.child(self.postId).removeValue()
+                    userLikesRef.child(userId).child(self.postId).removeValue()
+                })
             })
         }
+        
+        //removing from hashtagPostsRef
+        let words = caption.components(separatedBy: .whitespacesAndNewlines)
+        
+        for var word in words {
+            if word.hasPrefix("#") {
+                word = word.trimmingCharacters(in: .punctuationCharacters).trimmingCharacters(in: .symbols)
+                hashtagPostsRef.child(word).child(self.postId).removeValue()
+            }
+        }
+        
+        commentsRef.child(self.postId).removeValue()
+        
+        postsRef.child(self.postId).removeValue()
     }
 }

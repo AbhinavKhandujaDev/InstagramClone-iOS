@@ -32,7 +32,6 @@ class SplashViewController: UIViewController {
             }
             return
         }
-        print("not nil")
         self.presentVC(withIdentifier: "RootHomeTabBarController")
     }
 
