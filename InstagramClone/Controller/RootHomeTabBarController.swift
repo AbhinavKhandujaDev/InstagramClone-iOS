@@ -15,22 +15,12 @@ class RootHomeTabBarController: UITabBarController, UITabBarControllerDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        checkLoginStatus()
         self.delegate = self
         observeNotifs()
     }
     
-    fileprivate func checkLoginStatus() {
-        if Auth.auth().currentUser == nil {
-            DispatchQueue.main.async {
-                self.presentVC(withIdentifier: "RootNavViewController")
-            }
-            return
-        }
-    }
-    
     private func observeNotifs() {
-        guard let currUser = loggedInUid else { return }
+        guard let currUser = Auth.auth().currentUser?.uid else { return }
         notificationsRef.child(currUser).observeSingleEvent(of: .value) { (ss) in
             guard let allObjects = ss.children.allObjects as? [DataSnapshot] else {return}
             

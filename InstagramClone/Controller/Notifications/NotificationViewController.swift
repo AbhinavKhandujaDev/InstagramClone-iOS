@@ -18,8 +18,8 @@ class NotificationViewController: UITableViewController {
     private var timer : Timer?
     
     private var currentKey : String?
-    private let initialPostsCount: UInt = 9
-    private let furtherPostsCount: UInt = 6
+    private let initialPostsCount: UInt = 20
+    private let furtherPostsCount: UInt = 10
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,7 +38,7 @@ class NotificationViewController: UITableViewController {
     }
     
     private func fetchNotifs() {
-        guard let currUser = loggedInUid else { return }
+        guard let currUser = Auth.auth().currentUser?.uid else { return }
 
         if currentKey == nil {
             notificationsRef.child(currUser).queryLimited(toLast: initialPostsCount).observeSingleEvent(of: .value) { (snapshot) in

@@ -107,7 +107,7 @@ class ProfileHeaderCell: UICollectionViewCell {
     }
     
     fileprivate func configureEditProfBtn() {
-        if user?.uid != loggedInUid && user != nil {
+        if user?.uid != Auth.auth().currentUser?.uid && user != nil {
             editProfileBtn.backgroundColor = UIColor(red: 17/255, green: 154/255, blue: 237/255, alpha: 1)
             editProfileBtn.setTitleColor(UIColor.white, for: .normal)
             user?.checkIfFollowed(completion: { [weak self] (isFollowed) in

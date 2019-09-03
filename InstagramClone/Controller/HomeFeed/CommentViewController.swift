@@ -82,7 +82,7 @@ class CommentViewController: UITableViewController {
     @objc private func handleUploadComment() {
         if !commentTextField.hasText {return}
         guard let text = commentTextField.text else {return}
-        guard let uid = loggedInUid else {return}
+        guard let uid = Auth.auth().currentUser?.uid else {return}
         let creationDate = Int(Date().timeIntervalSince1970)
         let values : [String : Any] = ["commentText": text, "creationDate": creationDate, "user": uid]
         commentsRef.child(post.postId).childByAutoId().updateChildValues(values) { (error, ref) in
@@ -109,7 +109,7 @@ class CommentViewController: UITableViewController {
     }
     
     private func uploadCommentNotifToServer() {
-        guard let currUser = loggedInUid else { return }
+        guard let currUser = Auth.auth().currentUser?.uid else { return }
         if currUser == post.ownerUid {return}
         let creationDate = Int(Date().timeIntervalSince1970)
         let values : [String:Any] = ["checked" : 0, "creationDate" : creationDate, "uid" : currUser, "type" : commentIntValue, "postId" : post.postId]

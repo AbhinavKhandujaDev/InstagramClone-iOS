@@ -41,9 +41,34 @@ class ProfileViewController: UIViewController {
             fetchCurrentUserData()
             fetchPost()
         }
+        
+        configureNavBar()
     }
     
-    fileprivate func fetchPost(uid: String = loggedInUid!) {
+    fileprivate func configureNavBar() {
+        self.navigationItem.title = "Home Feed"
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: #imageLiteral(resourceName: "send2"), style: .plain, target: self, action: nil)
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(logout))
+    }
+    
+    @objc fileprivate func logout() {
+        let alert = UIAlertController(title: "Are you sure?", message: nil, preferredStyle: .actionSheet)
+        
+        alert.addAction(UIAlertAction(title: "Log Out", style: .destructive, handler: { (_) in
+            do{
+                try Auth.auth().signOut()
+                self.tabBarController?.dismiss(animated: true, completion: {
+                    self.presentVC(withIdentifier: "RootNavViewController")
+                })
+            }catch{
+                
+            }
+        }))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    fileprivate func fetchPost(uid: String = (Auth.auth().currentUser?.uid)!) {
         self.fetchPosts(databaseRef: userPostsRef.child(uid), currentKey: currentKey, initialCount: initialPostsCount, furtherCount: furtherPostsCount, lastPostId: { (first) in
             self.profileCollView.refreshControl?.endRefreshing()
             self.currentKey = first.key
@@ -55,8 +80,8 @@ class ProfileViewController: UIViewController {
     }
     
     fileprivate func fetchCurrentUserData() {
-        let currentUid = loggedInUid
-        usersRef.child(currentUid!).observeSingleEvent(of: .value) { (snapshot) in
+        guard let currentUid = Auth.auth().currentUser?.uid else {return}
+        usersRef.child(currentUid).observeSingleEvent(of: .value) { (snapshot) in
             let uid = snapshot.key
             guard let details = snapshot.value as? [String:AnyObject] else {return}
             self.user = User(uid: uid, details: details)
@@ -164,7 +189,7 @@ extension ProfileViewController: ProfileHeaderDelegate {
         var numbOfFollowers: Int = 0
         var numbOfFollowings : Int = 0
         
-        dbRef.child("user-follower").child((header.user?.uid)!).observe(.value) { (snapshot) in
+        userFollowerRef.child((header.user?.uid)!).observe(.value) { (snapshot) in
             if let ss = snapshot.value as? [String:AnyObject] {
                 numbOfFollowers = ss.count
             }else {

@@ -8,6 +8,7 @@
 
 import UIKit
 import ActiveLabel
+import Firebase
 
 class HomeFeedCollectionViewCell: UICollectionViewCell {
 
@@ -28,19 +29,15 @@ class HomeFeedCollectionViewCell: UICollectionViewCell {
     
     var post : Post? {
         didSet{
-            guard let date = post?.createdAt else { return }
-            postImageView.loadImage(with: (post?.imageUrl)!)
-            likesLabel.text = String(describing: post?.likes ?? 0) + " " + "likes"
-            captionLabel.text = post?.caption
+            guard let post = post else { return }
+            guard let date = post.createdAt else { return }
+            postImageView.loadImage(with: (post.imageUrl)!)
+            likesLabel.text = String(describing: post.likes ?? 0) + " " + "likes"
+            captionLabel.text = post.caption
             timeLabel.text = date.timeAgoDisplay()
             
-            guard let owner = post?.ownerUid else {return}
-            usersRef.child(owner).observeSingleEvent(of: .value) { (snapshot) in
-                guard let ss = snapshot.value as? [String:Any] else {return}
-                guard let username = ss["username"] as? String else {return}
-                self.profileImgView.loadImage(with: ss["profileImageUrl"] as! String)
-                self.usernameLabel.setTitle(username, for: .normal)
-            }
+            setDetails(post: post)
+            
             captionLabel.enabledTypes = [.hashtag, .mention, .url]
             delegate?.handleConfigureLikeButton(for: self)
         }
@@ -51,6 +48,18 @@ class HomeFeedCollectionViewCell: UICollectionViewCell {
         postImageView.addTapGesture(target: self, selector: #selector(self.doubleTapToLike(sender:)), tapsRequired: 2)
         profileImgView.layer.cornerRadius = profileImgView.frame.height/2
         likesLabel.addTapGesture(target: self, selector: #selector(self.likesLabelTapped(sender:)))
+    }
+    
+    private func setDetails(post: Post) {
+        guard let currUser = Auth.auth().currentUser?.uid else { return }
+        guard let owner = post.ownerUid else {return}
+        optionsBtn.isHidden = (owner != currUser) ? true : false
+        usersRef.child(owner).observeSingleEvent(of: .value) { (snapshot) in
+            guard let ss = snapshot.value as? [String:Any] else {return}
+            guard let username = ss["username"] as? String else {return}
+            self.profileImgView.loadImage(with: ss["profileImageUrl"] as! String)
+            self.usernameLabel.setTitle(username, for: .normal)
+        }
     }
     
     @objc private func doubleTapToLike(sender: UITapGestureRecognizer) {

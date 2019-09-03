@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 
 class ChatViewController: UITableViewController {
 //    private var chatCellIdentifier = "chatCollCell"
@@ -100,7 +101,7 @@ class ChatViewController: UITableViewController {
     
     private func uploadMessageToServer() {
         guard let messageText = messageTextField.text else { return }
-        guard let currentUid = loggedInUid else { return }
+        guard let currentUid = Auth.auth().currentUser?.uid else { return }
         guard let userId = user?.uid else { return }
         let creationDate = Int(Date().timeIntervalSince1970)
         let messageValues : [String:Any] = ["creationDate" : creationDate, "fromId": currentUid, "toId": userId, "messageText": messageText]
@@ -115,7 +116,7 @@ class ChatViewController: UITableViewController {
     }
     
     private func observeMessage() {
-        guard let currentUid = loggedInUid else { return }
+        guard let currentUid = Auth.auth().currentUser?.uid else { return }
         guard let chatPartnerId = user?.uid else { return }
         
         userMessagesRef.child(currentUid).child(chatPartnerId).observe(.childAdded) { (ss) in

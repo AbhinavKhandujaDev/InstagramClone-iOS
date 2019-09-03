@@ -79,17 +79,12 @@ class LoginViewController: UIViewController {
         guard let email = emailTxtField.text, let password = passwordTxtField.text else { return }
         
         Auth.auth().signIn(withEmail: email, password: password) { (dataResult, dataError) in
-            guard let result = dataResult else {
+            guard let _ = dataResult else {
                 print("Sign in error is ",String(dataError.debugDescription.split(separator: "\"")[1]))
                 return
             }
-            let uid = result.user.uid
-            let email = result.user.email
-            let photoURL = result.user.photoURL
             
-            print("uid: ",uid," email: ",email!, " photoUrl: ","\(photoURL)")
-            
-            self.dismiss(animated: true, completion: nil)
+            self.presentVC(withIdentifier: "RootHomeTabBarController")
         }
     }
 }

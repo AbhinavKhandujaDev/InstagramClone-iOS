@@ -35,11 +35,11 @@ class PostViewController: UIViewController, UITextViewDelegate {
     }
     
     fileprivate func updateUserFeeds(with postId: String) {
-        guard let currentUsr = loggedInUid else { return }
+        guard let currentUsr = Auth.auth().currentUser?.uid else { return }
         let values = [postId:1]
         
         //update follower feed
-        dbRef.child("user-follower").child(currentUsr).observe(.childAdded) { (ss) in
+        userFollowerRef.child(currentUsr).observe(.childAdded) { (ss) in
             let followerUid = ss.key
             userFeedRef.child(followerUid).updateChildValues(values)
         }
@@ -71,7 +71,7 @@ class PostViewController: UIViewController, UITextViewDelegate {
     }
     
     @IBAction func submitTapped(_ sender: UIButton) {
-        guard let uid = loggedInUid else{return}
+        guard let uid = Auth.auth().currentUser?.uid else{return}
         guard let uploadData = image?.jpegData(compressionQuality: 0.1) else {return}
         let creationDate = Int(Date().timeIntervalSince1970)
         let filename = UUID().uuidString
@@ -102,7 +102,7 @@ class PostViewController: UIViewController, UITextViewDelegate {
                         self.uploadMentionedNotification(postId: postId.key!, text: captionText, isCommentMention: false)
                     }
                     
-                    userPostsRef.child(loggedInUid!).updateChildValues([postId.key! : 1])
+                    userPostsRef.child(uid).updateChildValues([postId.key! : 1])
                     self.updateUserFeeds(with: postId.key!)
                     self.navigationController?.dismiss(animated: true, completion: nil)
                 })

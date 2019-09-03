@@ -44,12 +44,15 @@ class Post {
     }
     
     func adjustLikes(addLike: Bool, completion: @escaping((Int)->())) {
-        guard let userId = loggedInUid else { return }
+        guard let userId = Auth.auth().currentUser?.uid else { return }
         if addLike {
+            print("adding like")
             //update like from user-like structure
-            userLikesRef.child(userId).setValue([postId : 1]) { (error, ref) in
+            let value = [postId : 1]
+            userLikesRef.child(userId).updateChildValues(value) { (error, ref) in
                 self.sendLikeNotifToServer()
-                //update like from user-like structure
+                
+                //update like count
                 postLikesRef.child(self.postId).updateChildValues([userId : 1]) { (error, ref) in
                     self.likes += 1
                     self.didLike = true
@@ -58,7 +61,6 @@ class Post {
                 }
             }
         }else {
-            
             userLikesRef.child(userId).child(postId).observeSingleEvent(of: .value) { (snapshot) in
                 let notificationId = snapshot.key
                 notificationsRef.child(self.ownerUid).child(notificationId).removeValue(completionBlock: { (error, ref) in
@@ -80,7 +82,7 @@ class Post {
     }
     
     func sendLikeNotifToServer() {
-        guard let currUser = loggedInUid else { return }
+        guard let currUser = Auth.auth().currentUser?.uid else { return }
         if currUser == self.ownerUid {return}
         let creationDate = Int(Date().timeIntervalSince1970)
         let values : [String:Any] = ["checked" : 0, "creationDate" : creationDate, "uid" : currUser, "type" : likeIntValue, "postId" : postId]
@@ -88,6 +90,34 @@ class Post {
         let notifRef = notificationsRef.child(self.ownerUid).childByAutoId()
         notifRef.updateChildValues(values) { (error, ref) in
             userLikesRef.child(currUser).child(self.postId).setValue(notifRef.key)
+        }
+    }
+    
+    func deletePost() {
+        guard let currUser = Auth.auth().currentUser?.uid else { return }
+        
+        //remove from storage
+        Storage.storage().reference(forURL: self.imageUrl).delete(completion: nil)
+        
+        //deleting from other users feed by looking users in user-follower
+        userFollowerRef.child(currUser).observe(.childAdded) { (snapshot) in
+            let followerUid = snapshot.key
+            userFeedRef.child(followerUid).child(self.postId).removeValue()
+        }
+        //deleting from own user-feed structure
+        userFeedRef.child(currUser).child(self.postId).removeValue()
+        
+        //deleting from userPostsRef
+        userPostsRef.child(currUser).child(self.postId).removeValue()
+        
+        //deleting from postLikesRef, userLikesRef and notificationsRef by accessing users in postLikesRef of the post
+        postLikesRef.child(postId).observe(.childAdded) { (snapshot) in
+            let userId = snapshot.key
+            userLikesRef.child(userId).child(self.postId).observe(.childAdded, with: { (snapshot) in
+                //removing post from notifications
+//                guard let notificationId = snapshot.value as? String else {return}
+//                notificationsRef.child(ownerUid)
+            })
         }
     }
 }

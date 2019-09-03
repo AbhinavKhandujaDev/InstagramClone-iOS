@@ -27,7 +27,6 @@ class HomeFeedViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureNavBar()
         feedCollView.register(UINib(nibName: "HomeFeedCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: feedCellIdentifier)
         fetchPosts()
 
@@ -36,15 +35,8 @@ class HomeFeedViewController: UIViewController {
         feedCollView.refreshControl = refreshCtrl
         
         navigationItem.rightBarButtonItem?.action = #selector(showMessagesTapped(_:))
-    }
-    
-    fileprivate func configureNavBar() {
-        self.navigationItem.title = "Home Feed"
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: #imageLiteral(resourceName: "send2"), style: .plain, target: self, action: nil)
         
-        if !viewSinglePost {
-            self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(logout))
-        }
+        self.navigationItem.title = "Home"
     }
     
     @objc fileprivate func handleRefresh() {
@@ -60,9 +52,9 @@ class HomeFeedViewController: UIViewController {
             feeds.append(post)
             return
         }
-        guard let currentUser = loggedInUid else { return }
+        guard let currentUser = Auth.auth().currentUser?.uid else { return }
 
-        self.fetchPosts(databaseRef: userPostsRef.child(currentUser), currentKey: currentKey, initialCount: initialPostsCount, furtherCount: furtherPostsCount, lastPostId: { (first) in
+        self.fetchPosts(databaseRef: userFeedRef.child(currentUser), currentKey: currentKey, initialCount: initialPostsCount, furtherCount: furtherPostsCount, lastPostId: { (first) in
             self.feedCollView.refreshControl?.endRefreshing()
             self.currentKey = first.key
         }) { (post) in
@@ -71,21 +63,7 @@ class HomeFeedViewController: UIViewController {
             self.feedCollView.reloadData()
         }
     }
-    
-    @objc fileprivate func logout() {
-        let alert = UIAlertController(title: "Are you sure?", message: nil, preferredStyle: .actionSheet)
-        
-        alert.addAction(UIAlertAction(title: "Log Out", style: .destructive, handler: { (_) in
-            do{
-                try Auth.auth().signOut()
-                self.tabBarController?.presentVC(withIdentifier: "RootNavViewController")
-            }catch{
-                
-            }
-        }))
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-        self.present(alert, animated: true, completion: nil)
-    }
+
     @objc private func showMessagesTapped(_ sender: Any) {
         self.pushTo(vc: MessagesViewController.self, storyboard: "Main", beforeCompletion: { (vc) -> (Bool) in
             return true
@@ -100,7 +78,8 @@ extension HomeFeedViewController : UICollectionViewDataSource, UICollectionViewD
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: feedCellIdentifier, for: indexPath) as! HomeFeedCollectionViewCell
-        cell.post = feeds[indexPath.row]
+        let feed = feeds[indexPath.row]
+        cell.post = feed
         cell.delegate = self
         handleMentionTapped(for: cell)
         handleHashtagTapped(for: cell)
@@ -142,7 +121,16 @@ extension HomeFeedViewController : FeedCellDelegate {
     }
     
     func handleOptionsTapped(for feedCell: HomeFeedCollectionViewCell) {
-        
+        guard let post = feedCell.post else { return }
+//        let alertController = UIAlertController(title: "Options", message: nil, preferredStyle: .actionSheet)
+//        alertController.addAction(UIAlertAction(title: "Delete Post", style: .destructive, handler: { (action) in
+//            post.deletePost()
+//        }))
+//        alertController.addAction(UIAlertAction(title: "Edit Post", style: .default, handler: { (action) in
+//            print("edit post")
+//        }))
+//        alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+//        self.present(alertController, animated: true, completion: nil)
     }
     
     func handleLikeTapped(for feedCell: HomeFeedCollectionViewCell) {
@@ -171,7 +159,7 @@ extension HomeFeedViewController : FeedCellDelegate {
     func handleConfigureLikeButton(for feedCell: HomeFeedCollectionViewCell) {
         guard let post = feedCell.post else { return }
         
-        guard let userId = loggedInUid else { return }
+        guard let userId = Auth.auth().currentUser?.uid else { return }
         userLikesRef.child(userId).observeSingleEvent(of: .value) { (snapshot) in
             if snapshot.hasChild(post.postId) {
                 post.didLike = true

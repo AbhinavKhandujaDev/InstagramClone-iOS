@@ -61,7 +61,7 @@ class FollowViewController: UIViewController {
     fileprivate func getDatabaseReference() -> DatabaseReference? {
         guard let mode = viewingMode else { return nil }
         switch mode {
-        case .followers: return dbRef.child("user-follower")
+        case .followers: return userFollowerRef
         case .following: return dbRef.child("user-following")
         case .likes:     return postLikesRef
         }

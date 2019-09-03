@@ -39,7 +39,7 @@ class SearchTableViewCell: UITableViewCell {
     func configureFollowedBtn() {
         followBtn.layer.cornerRadius = 5
         followBtn.backgroundColor = UIColor(red: 17/255, green: 154/255, blue: 237/255, alpha: 1)
-        if user?.uid == loggedInUid {
+        if user?.uid == Auth.auth().currentUser?.uid {
             followBtn.isHidden = true
             return
         }

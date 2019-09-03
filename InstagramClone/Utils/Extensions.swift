@@ -32,7 +32,7 @@ extension UIViewController {
     }
     
     func uploadMentionedNotification(postId: String, text: String, isCommentMention: Bool) {
-        guard let currUser = loggedInUid else { return }
+        guard let currUser = Auth.auth().currentUser?.uid else { return }
         let words = text.components(separatedBy: .whitespacesAndNewlines)
         
         let postType = isCommentMention ? commentMentionIntValue : postMentionIntValue
@@ -175,6 +175,16 @@ extension UIView {
     func roundCorners(radius: CGFloat? = nil) {
         self.clipsToBounds = true
         self.layer.cornerRadius = (radius != nil) ? radius! : self.frame.height/2
+    }
+    
+    func setGradientColor(colors: [CGColor] = [#colorLiteral(red: 0.9529411793, green: 0.6862745285, blue: 0.1333333403, alpha: 1),#colorLiteral(red: 0.9686274529, green: 0.78039217, blue: 0.3450980484, alpha: 1),#colorLiteral(red: 0.9764705896, green: 0.850980401, blue: 0.5490196347, alpha: 1)], at int: Int = 0) {
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.frame = self.bounds
+        gradientLayer.colors = colors
+        gradientLayer.locations = [0.0,0.5,1.0]
+        gradientLayer.startPoint = CGPoint(x: 1.0, y: 1.0)
+        gradientLayer.endPoint = CGPoint(x: 0.0, y: 0.0)
+        layer.insertSublayer(gradientLayer, at: UInt32(int))
     }
     
 }

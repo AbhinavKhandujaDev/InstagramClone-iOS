@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Firebase
 
 class Message {
     var messageText : String!
@@ -33,7 +34,7 @@ class Message {
     }
     
     func getChatPartnerId() -> String {
-        guard let currUser = loggedInUid else { return "nil" }
+        guard let currUser = Auth.auth().currentUser?.uid else { return "nil" }
         if fromId == currUser {
             return toId
         }else {

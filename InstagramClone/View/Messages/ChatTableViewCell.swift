@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 
 class ChatTableViewCell: UITableViewCell {
     
@@ -37,7 +38,7 @@ class ChatTableViewCell: UITableViewCell {
     }
     
     private func loadProfileImage() {
-        guard let currUser = loggedInUid else { return }
+        guard let currUser = Auth.auth().currentUser?.uid else { return }
         guard let message = message else { return }
         var uid = message.getChatPartnerId()
         
@@ -52,7 +53,7 @@ class ChatTableViewCell: UITableViewCell {
     
     private func setConstraints() {
         guard let message = message else { return }
-        guard let currUser = loggedInUid else { return }
+        guard let currUser = Auth.auth().currentUser?.uid else { return }
         bubbleViewLeftAnchor?.isActive = currUser == message.fromId ? false : true
         bubbleViewRightAnchor?.isActive = currUser == message.fromId ? true : false
         

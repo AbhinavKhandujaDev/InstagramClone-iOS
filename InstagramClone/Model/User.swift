@@ -36,7 +36,7 @@ class User {
     }
     
     func follow(completion: @escaping ((Bool)->())) {
-        guard let loggedInUid = loggedInUid else { return }
+        guard let loggedInUid = Auth.auth().currentUser?.uid else { return }
         guard let searchedUid = uid else {return}
         
         dbRef.child(FollowUnfollow.following.rawValue).child(loggedInUid).updateChildValues([searchedUid : 1]) { [weak self] (error, ref) in
@@ -54,7 +54,7 @@ class User {
     }
     
     func unfollow(completion: @escaping ((Bool)->())) {
-        guard let loggedInUid = loggedInUid else { return }
+        guard let loggedInUid = Auth.auth().currentUser?.uid else { return }
         guard let searchedUid = uid else {return}
         dbRef.child(FollowUnfollow.following.rawValue).child(loggedInUid).child(searchedUid).removeValue { [weak self] (error, ref) in
             if error != nil {
@@ -70,7 +70,7 @@ class User {
     }
     
     func checkIfFollowed(completion: @escaping ((Bool)->())) {
-        guard let loggedInUid = loggedInUid else { return }
+        guard let loggedInUid = Auth.auth().currentUser?.uid else { return }
         guard let searchedUid = uid else {return}
         dbRef.child(FollowUnfollow.following.rawValue).child(loggedInUid).observeSingleEvent(of: .value) { (snapshot) in
             if snapshot.hasChild(searchedUid) {
@@ -83,7 +83,7 @@ class User {
     }
     
     func uploadFollowNotifToServer() {
-        guard let currUser = loggedInUid else { return }
+        guard let currUser = Auth.auth().currentUser?.uid else { return }
         if currUser == uid {return}
         let creationDate = Int(Date().timeIntervalSince1970)
         let values : [String:Any] = ["checked" : 0, "creationDate" : creationDate, "uid" : currUser, "type" : followIntValue]

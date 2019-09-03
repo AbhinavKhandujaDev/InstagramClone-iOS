@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 
 class NewMessageTableViewController: UITableViewController {
 
@@ -33,9 +34,10 @@ class NewMessageTableViewController: UITableViewController {
     }
     
     private func fetchUsers() {
+        guard let currUser = Auth.auth().currentUser?.uid else { return }
         usersRef.observe(.childAdded) { (ss) in
             let uid = ss.key
-            if uid != loggedInUid! {
+            if uid != currUser {
                 dbRef.fetchUser(uid: uid, completion: { (user) in
                     self.users.append(user)
                     self.tableView.reloadData()

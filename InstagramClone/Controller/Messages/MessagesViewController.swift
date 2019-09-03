@@ -37,7 +37,7 @@ class MessagesViewController: UITableViewController {
     }
     
     private func fetchMessages() {
-        guard let currUser = loggedInUid else { return }
+        guard let currUser = Auth.auth().currentUser?.uid else { return }
         self.messages.removeAll()
         self.messagesDict.removeAll()
         self.tableView.reloadData()
