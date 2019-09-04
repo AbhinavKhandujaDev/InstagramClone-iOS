@@ -22,6 +22,8 @@ class HomeFeedViewController: UIViewController {
     private let initialPostsCount: UInt = 5
     private let furtherPostsCount: UInt = 6
     
+    var profileVC : ProfileViewController?
+    
     var viewSinglePost : Bool = false
     var post : Post?
     
@@ -127,7 +129,10 @@ extension HomeFeedViewController : FeedCellDelegate {
             if !self.viewSinglePost {
                 self.handleRefresh()
             }else {
-                self.navigationController?.popToRootViewController(animated: true)
+                if let userProfileVC = self.profileVC {
+                    self.navigationController?.popViewController(animated: true)
+                    userProfileVC.handleRefresh()
+                }
             }
         }))
         

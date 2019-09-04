@@ -44,6 +44,8 @@ class SearchViewController: UIViewController {
         fetchPosts()
         
         configureCollectionView()
+        
+        configureRefreshController()
     }
     
     private func configureCollectionView() {
@@ -84,11 +86,25 @@ class SearchViewController: UIViewController {
     private func fetchPosts() {
         self.fetchPosts(databaseRef: postsRef, currentKey: postCurrentKey, initialCount: initialPostsCount, furtherCount: furtherPostsCount, lastPostId: { (lastId) in
             self.postCurrentKey = lastId.key
+            self.searchTableView.refreshControl?.endRefreshing()
         }) { (post) in
             self.posts.append(post)
             self.posts.sort(by: {$0.createdAt > $1.createdAt})
             self.collectionView.reloadData()
         }
+    }
+    
+    private func configureRefreshController() {
+        let refreshCtrl = UIRefreshControl()
+        refreshCtrl.addTarget(self, action: #selector(handleRefresh), for: .valueChanged)
+        searchTableView.refreshControl = refreshCtrl
+    }
+    
+    @objc func handleRefresh() {
+        posts.removeAll(keepingCapacity: true)
+        postCurrentKey = nil
+        fetchPosts()
+        collectionView.reloadData()
     }
     
 }

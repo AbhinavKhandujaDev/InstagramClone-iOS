@@ -36,13 +36,15 @@ class ProfileViewController: UIViewController {
         }
         
         if user?.uid != nil {
-            fetchPost(uid: (user?.uid)!)
+            fetchPosts(uid: (user?.uid)!)
         }else {
             fetchCurrentUserData()
-            fetchPost()
+            fetchPosts()
         }
         
         configureNavBar()
+        
+        configureRefreshController()
     }
     
     fileprivate func configureNavBar() {
@@ -68,7 +70,7 @@ class ProfileViewController: UIViewController {
         self.present(alert, animated: true, completion: nil)
     }
     
-    fileprivate func fetchPost(uid: String = (Auth.auth().currentUser?.uid)!) {
+    fileprivate func fetchPosts(uid: String = (Auth.auth().currentUser?.uid)!) {
         self.fetchPosts(databaseRef: userPostsRef.child(uid), currentKey: currentKey, initialCount: initialPostsCount, furtherCount: furtherPostsCount, lastPostId: { (first) in
             self.profileCollView.refreshControl?.endRefreshing()
             self.currentKey = first.key
@@ -88,6 +90,19 @@ class ProfileViewController: UIViewController {
             self.navigationItem.title = self.user?.username
             self.profileCollView.reloadData()
         }
+    }
+    
+    private func configureRefreshController() {
+        let refreshCtrl = UIRefreshControl()
+        refreshCtrl.addTarget(self, action: #selector(handleRefresh), for: .valueChanged)
+        profileCollView.refreshControl = refreshCtrl
+    }
+    
+    @objc func handleRefresh() {
+        posts.removeAll(keepingCapacity: true)
+        currentKey = nil
+        fetchPosts()
+        profileCollView.reloadData()
     }
     
     @IBAction func logoutTapped(_ sender: UIBarButtonItem) {
@@ -133,6 +148,7 @@ extension ProfileViewController: UICollectionViewDelegate, UICollectionViewDataS
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         self.pushTo(vc: HomeFeedViewController.self, storyboard: "Main", beforeCompletion: { (vc) -> (Bool) in
+            vc.profileVC = self
             vc.post = self.posts[indexPath.row]
             vc.viewSinglePost = true
             return true
@@ -141,7 +157,7 @@ extension ProfileViewController: UICollectionViewDelegate, UICollectionViewDataS
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if posts.count > initialPostsCount - 1 && indexPath.item == posts.count - 1 {
-            fetchPost()
+            fetchPosts()
         }
     }
     
