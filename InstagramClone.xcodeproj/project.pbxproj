@@ -42,6 +42,7 @@
 		1C841F74231E80AA00B4C48D /* GlobalProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C841F73231E80AA00B4C48D /* GlobalProperties.swift */; };
 		1C841F76231E81B500B4C48D /* SplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C841F75231E81B500B4C48D /* SplashViewController.swift */; };
 		1C87F188230E9B31002F8DA7 /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C87F187230E9B31002F8DA7 /* Notification.swift */; };
+		1C8E94382320522C00574FE8 /* EditProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C8E94372320522C00574FE8 /* EditProfileViewController.swift */; };
 		1CBF8B25231879F300C8EA20 /* HashtagCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF8B24231879F300C8EA20 /* HashtagCollectionViewCell.swift */; };
 		1CC44E0322F77E410089C92D /* Protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CC44E0222F77E410089C92D /* Protocols.swift */; };
 		1CC44E0522F79C340089C92D /* FollowViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CC44E0422F79C340089C92D /* FollowViewController.swift */; };
@@ -98,6 +99,7 @@
 		1C841F73231E80AA00B4C48D /* GlobalProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalProperties.swift; sourceTree = "<group>"; };
 		1C841F75231E81B500B4C48D /* SplashViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashViewController.swift; sourceTree = "<group>"; };
 		1C87F187230E9B31002F8DA7 /* Notification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notification.swift; sourceTree = "<group>"; };
+		1C8E94372320522C00574FE8 /* EditProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileViewController.swift; sourceTree = "<group>"; };
 		1CBF8B24231879F300C8EA20 /* HashtagCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashtagCollectionViewCell.swift; sourceTree = "<group>"; };
 		1CC44E0222F77E410089C92D /* Protocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocols.swift; sourceTree = "<group>"; };
 		1CC44E0422F79C340089C92D /* FollowViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowViewController.swift; sourceTree = "<group>"; };
@@ -216,6 +218,7 @@
 			children = (
 				1C04207022F3258B00DF1C13 /* ProfileViewController.swift */,
 				1CC44E0422F79C340089C92D /* FollowViewController.swift */,
+				1C8E94372320522C00574FE8 /* EditProfileViewController.swift */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -506,6 +509,7 @@
 				1CCBA69622FDE51900997277 /* Post.swift in Sources */,
 				1CBF8B25231879F300C8EA20 /* HashtagCollectionViewCell.swift in Sources */,
 				1CF8FCAE22F9D2A80052D87E /* SelectImageHeaderViewCell.swift in Sources */,
+				1C8E94382320522C00574FE8 /* EditProfileViewController.swift in Sources */,
 				1CC44E0722F79D400089C92D /* FollowTableViewCell.swift in Sources */,
 				1C87F188230E9B31002F8DA7 /* Notification.swift in Sources */,
 				1C04206722F31BA400DF1C13 /* RootHomeTabBarController.swift in Sources */,

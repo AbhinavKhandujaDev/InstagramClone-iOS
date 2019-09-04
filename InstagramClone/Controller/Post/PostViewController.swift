@@ -11,12 +11,14 @@ import Firebase
 
 class PostViewController: UIViewController, UITextViewDelegate {
     
-    @IBOutlet weak var photoImageView: UIImageView!
+    @IBOutlet weak var photoImageView: CustomImageView!
     @IBOutlet weak var captionTextView: UITextView!
     
     @IBOutlet weak var submitBtn: UIButton!
     
     var image : UIImage?
+    
+    var postToEdit : Post?
     
     fileprivate var disableSubmitBtn : Bool = true {
         didSet {
@@ -32,6 +34,18 @@ class PostViewController: UIViewController, UITextViewDelegate {
         }
         submitBtn.layer.cornerRadius = 5
         disableSubmitBtn = true
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        //Update the post
+        guard let post = postToEdit else { return }
+        
+        self.photoImageView.loadImage(with: post.imageUrl)
+        self.captionTextView.text = post.caption
+        self.navigationItem.title = "Edit Post"
+        self.submitBtn.setTitle("Update post", for: .normal)
     }
     
     fileprivate func updateUserFeeds(with postId: String) {
@@ -70,7 +84,7 @@ class PostViewController: UIViewController, UITextViewDelegate {
         }
     }
     
-    @IBAction func submitTapped(_ sender: UIButton) {
+    private func handleUploadPost() {
         guard let uid = Auth.auth().currentUser?.uid else{return}
         guard let uploadData = image?.jpegData(compressionQuality: 0.1) else {return}
         let creationDate = Int(Date().timeIntervalSince1970)
@@ -107,6 +121,25 @@ class PostViewController: UIViewController, UITextViewDelegate {
                     self.navigationController?.dismiss(animated: true, completion: nil)
                 })
             })
+        }
+    }
+    
+    private func handleUpdatePost() {
+        guard let text = captionTextView.text else { return }
+        guard let post = postToEdit else { return }
+        uploadHashtagToServer(withId: post.postId)
+        postsRef.child(post.postId).child("caption").setValue(text) { (error, ref) in
+            if error == nil {
+                self.navigationController?.popViewController(animated: true)
+            }
+        }
+    }
+    
+    @IBAction func submitTapped(_ sender: UIButton) {
+        if postToEdit == nil {
+            handleUploadPost()
+        }else {
+            handleUpdatePost()
         }
     }
 }

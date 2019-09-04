@@ -11,8 +11,6 @@ import Firebase
 import ActiveLabel
 
 class HomeFeedViewController: UICollectionViewController {
-
-//    @IBOutlet weak var collectionView: UICollectionView!
     
     fileprivate let feedCellIdentifier = "feedCell"
     
@@ -137,7 +135,10 @@ extension HomeFeedViewController : FeedCellDelegate {
         }))
         
         alertController.addAction(UIAlertAction(title: "Edit Post", style: .default, handler: { (action) in
-            print("edit post")
+            self.pushTo(vc: PostViewController.self, storyboard: "Main", beforeCompletion: { (vc) -> (Bool) in
+                vc.postToEdit = post
+                return true
+            }, completion: nil)
         }))
         
         alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))

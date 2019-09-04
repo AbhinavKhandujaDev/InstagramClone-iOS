@@ -143,7 +143,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="HGD-2d-Dvt">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="HGD-2d-Dvt" customClass="CustomImageView" customModule="InstagramClone" customModuleProvider="target">
                                 <rect key="frame" x="12" y="32" width="100" height="100"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="HGD-2d-Dvt" secondAttribute="height" multiplier="1:1" id="WES-hg-TjK"/>
@@ -167,7 +167,7 @@
                                     <constraint firstAttribute="height" constant="40" id="HTd-18-AYZ"/>
                                 </constraints>
                                 <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <state key="normal" title="Button"/>
+                                <state key="normal" title="Post"/>
                                 <connections>
                                     <action selector="submitTapped:" destination="mPX-jK-Omp" eventType="touchUpInside" id="qjn-mI-GxE"/>
                                 </connections>
@@ -1133,6 +1133,21 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="FiC-cr-3zD" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="5031" y="913"/>
+        </scene>
+        <!--Edit Profile View Controller-->
+        <scene sceneID="zAP-Dx-315">
+            <objects>
+                <viewController storyboardIdentifier="EditProfileViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="vpd-3E-t5N" customClass="EditProfileViewController" customModule="InstagramClone" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="SYF-4T-RuX">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="AwV-N2-qt0"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Wcd-V9-Wuq" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="5031" y="2375"/>
         </scene>
     </scenes>
     <resources>

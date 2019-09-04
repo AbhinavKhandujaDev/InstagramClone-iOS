@@ -235,6 +235,11 @@ extension ProfileViewController: ProfileHeaderDelegate {
                 if !done{return}
                 header.editProfileBtn.setTitle("Follow", for: .normal)
             })
+        }else if header.editProfileBtn.titleLabel?.text == "Edit Profile" {
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let vc = storyboard.instantiateViewController(withIdentifier: "EditProfileViewController")
+            let navContriller = UINavigationController(rootViewController: vc)
+            self.present(navContriller, animated: true, completion: nil)
         }
     }
 }
