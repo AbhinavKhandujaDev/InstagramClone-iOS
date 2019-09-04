@@ -10,9 +10,9 @@ import UIKit
 import Firebase
 import ActiveLabel
 
-class HomeFeedViewController: UIViewController {
+class HomeFeedViewController: UICollectionViewController {
 
-    @IBOutlet weak var feedCollView: UICollectionView!
+//    @IBOutlet weak var collectionView: UICollectionView!
     
     fileprivate let feedCellIdentifier = "feedCell"
     
@@ -29,12 +29,12 @@ class HomeFeedViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        feedCollView.register(UINib(nibName: "HomeFeedCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: feedCellIdentifier)
+        collectionView.register(UINib(nibName: "HomeFeedCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: feedCellIdentifier)
         fetchPosts()
 
         let refreshCtrl = UIRefreshControl()
         refreshCtrl.addTarget(self, action: #selector(handleRefresh), for: .valueChanged)
-        feedCollView.refreshControl = refreshCtrl
+        collectionView.refreshControl = refreshCtrl
         
         self.navigationItem.title = !viewSinglePost ? "Home" : "Post"
     }
@@ -43,7 +43,7 @@ class HomeFeedViewController: UIViewController {
         feeds.removeAll(keepingCapacity: true)
         currentKey = nil
         fetchPosts()
-        feedCollView.reloadData()
+        collectionView.reloadData()
     }
     
     fileprivate func fetchPosts() {
@@ -55,12 +55,12 @@ class HomeFeedViewController: UIViewController {
         guard let currentUser = Auth.auth().currentUser?.uid else { return }
 
         self.fetchPosts(databaseRef: userFeedRef.child(currentUser), currentKey: currentKey, initialCount: initialPostsCount, furtherCount: furtherPostsCount, lastPostId: { (first) in
-            self.feedCollView.refreshControl?.endRefreshing()
+            self.collectionView.refreshControl?.endRefreshing()
             self.currentKey = first.key
         }) { (post) in
             self.feeds.append(post)
             self.feeds.sort(by: {$0.createdAt > $1.createdAt})
-            self.feedCollView.reloadData()
+            self.collectionView.reloadData()
         }
     }
 
@@ -71,12 +71,12 @@ class HomeFeedViewController: UIViewController {
     }
 }
 
-extension HomeFeedViewController : UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+extension HomeFeedViewController : UICollectionViewDelegateFlowLayout {
+    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return feeds.count
     }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: feedCellIdentifier, for: indexPath) as! HomeFeedCollectionViewCell
         let feed = feeds[indexPath.row]
         cell.post = feed
@@ -86,7 +86,7 @@ extension HomeFeedViewController : UICollectionViewDataSource, UICollectionViewD
         return cell
     }
     
-    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+    override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if feeds.count > initialPostsCount - 1 && indexPath.item == self.feeds.count - 1{
             fetchPosts()
         }
