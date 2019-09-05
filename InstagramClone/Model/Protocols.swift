@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 protocol ProfileHeaderDelegate {
     func handleEditFollowTapped(for header: ProfileHeaderCell)
@@ -36,4 +37,8 @@ protocol Printable {
 protocol NotificationCellDelegate {
     func handleFollowTapped(for notifCell: NotificationsTableViewCell)
     func handlePostTapped(for notifCell: NotificationsTableViewCell)
+}
+
+protocol InputAccessoryViewDelegate {
+    func didSubmit(comment: String)
 }

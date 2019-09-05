@@ -164,6 +164,17 @@ extension UIView {
         }
     }
     
+    var parentViewController: UIViewController? {
+        var parentResponder: UIResponder? = self
+        while parentResponder != nil {
+            parentResponder = parentResponder!.next
+            if let viewController = parentResponder as? UIViewController {
+                return viewController
+            }
+        }
+        return nil
+    }
+    
     func addTapGesture(target: Any, selector: Selector, tapsRequired: Int = 1) {
         let tapGest = UITapGestureRecognizer()
         tapGest.numberOfTapsRequired = tapsRequired

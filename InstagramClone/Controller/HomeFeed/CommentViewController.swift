@@ -18,40 +18,12 @@ class CommentViewController: UITableViewController {
     
     var comments = [Comment]()
     
-    lazy var containerView: UIView = {
-        let cView = UIView()
+    lazy var containerView: CommentInputAccessoryView = {
+        let frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 50)
+        let cView = CommentInputAccessoryView(frame: frame)
+        cView.delegate = self
         cView.backgroundColor = UIColor.white
-        cView.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 50)
-        
-        cView.addSubview(postButton)
-        postButton.anchor(top: nil, left: nil, bottom: nil, right: cView.rightAnchor, paddingTop: 0, paddingLeft: 8, paddingBottom: 0, paddingRight: 8, width: 50, height: 50)
-        postButton.centerYAnchor.constraint(equalTo: cView.centerYAnchor).isActive = true
-        
-        cView.addSubview(commentTextField)
-        commentTextField.anchor(top: cView.topAnchor, left: cView.leftAnchor, bottom: cView.bottomAnchor, right: postButton.leftAnchor, paddingTop: 0, paddingLeft: 8, paddingBottom: 0, paddingRight: 8, width: 0, height: 0)
-        
-        let separatorView = UIView()
-        separatorView.backgroundColor = UIColor(red: 230/255, green: 230/255, blue: 230/255, alpha: 1)
-        cView.addSubview(separatorView)
-        separatorView.anchor(top: cView.topAnchor, left: cView.leftAnchor, bottom: nil, right: cView.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 0.5)
-        
         return cView
-    }()
-    
-    let commentTextField : UITextField = {
-        let tf = UITextField()
-        tf.placeholder = "Enter comment..."
-        tf.font = UIFont.systemFont(ofSize: 14)
-        return tf
-    }()
-    
-    let postButton : UIButton = {
-        let btn = UIButton(type: .system)
-        btn.setTitle("Post", for: .normal)
-        btn.setTitleColor(.black, for: .normal)
-        btn.titleLabel?.font = UIFont.boldSystemFont(ofSize: 14)
-        btn.addTarget(self, action: #selector(handleUploadComment), for: .touchUpInside)
-        return btn
     }()
     
     override func viewDidLoad() {
@@ -77,21 +49,6 @@ class CommentViewController: UITableViewController {
     
     override var canBecomeFirstResponder: Bool {
         return true
-    }
-    
-    @objc private func handleUploadComment() {
-        if !commentTextField.hasText {return}
-        guard let text = commentTextField.text else {return}
-        guard let uid = Auth.auth().currentUser?.uid else {return}
-        let creationDate = Int(Date().timeIntervalSince1970)
-        let values : [String : Any] = ["commentText": text, "creationDate": creationDate, "user": uid]
-        commentsRef.child(post.postId).childByAutoId().updateChildValues(values) { (error, ref) in
-            self.uploadCommentNotifToServer()
-            if text.contains("@") {
-                self.uploadMentionedNotification(postId: self.post.postId, text: text, isCommentMention: true)
-            }
-            self.commentTextField.text = nil
-        }
     }
 
     private func fetchComments() {
@@ -149,5 +106,21 @@ extension CommentViewController {
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
+    }
+}
+
+extension CommentViewController : InputAccessoryViewDelegate {
+    func didSubmit(comment: String) {
+        let text = comment
+        guard let uid = Auth.auth().currentUser?.uid else {return}
+        let creationDate = Int(Date().timeIntervalSince1970)
+        let values : [String : Any] = ["commentText": text, "creationDate": creationDate, "user": uid]
+        commentsRef.child(post.postId).childByAutoId().updateChildValues(values) { (error, ref) in
+            self.uploadCommentNotifToServer()
+            if text.contains("@") {
+                self.uploadMentionedNotification(postId: self.post.postId, text: text, isCommentMention: true)
+            }
+            self.containerView.clearCommentTextView()
+        }
     }
 }
