@@ -47,11 +47,15 @@ class SignUpViewController: UIViewController {
         }
         
         view.addSubview(alreadyHaveAccountBtn)
-        alreadyHaveAccountBtn.anchor(top: nil, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 50)
+        alreadyHaveAccountBtn.anchor(top: nil, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 15, paddingRight: 0, width: 0, height: 50)
         
         disableSignUpBtn = true
         
         profileImgBtn.layer.cornerRadius = profileImgBtn.frame.height/2
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        view.endEditing(true)
     }
     
     @objc fileprivate func formValidation() {

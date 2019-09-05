@@ -31,3 +31,6 @@ let messagesRef = dbRef.child("messages")
 let userMessagesRef = dbRef.child("user-messages")
 
 let hashtagPostsRef = dbRef.child("hashtag-post")
+
+
+let profileImageStorageRef = storageRef.child("profile_images")

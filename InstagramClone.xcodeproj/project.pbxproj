@@ -52,6 +52,8 @@
 		1CD0670E22F5F0AA001642A1 /* SearchTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CD0670C22F5F0AA001642A1 /* SearchTableViewCell.swift */; };
 		1CD1EB9222F5AB1500954F25 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CD1EB9122F5AB1500954F25 /* User.swift */; };
 		1CE1B4B42316D9EF004EFFAA /* HashtagViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CE1B4B32316D9EF004EFFAA /* HashtagViewController.swift */; };
+		1CEFA3F82321213F0036AAB3 /* CommentInputAccessoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CEFA3F72321213F0036AAB3 /* CommentInputAccessoryView.swift */; };
+		1CEFA3FB232122400036AAB3 /* CommentInputTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CEFA3FA232122400036AAB3 /* CommentInputTextView.swift */; };
 		1CF59EEF230D526C00D1E999 /* CommentTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CF59EEE230D526C00D1E999 /* CommentTableViewCell.swift */; };
 		1CF59EF1230D5BC800D1E999 /* NotificationsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CF59EF0230D5BC800D1E999 /* NotificationsTableViewCell.swift */; };
 		1CF8FCA722F9872F0052D87E /* SearchTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1CF8FCA622F9872F0052D87E /* SearchTableViewCell.xib */; };
@@ -109,6 +111,8 @@
 		1CD0670C22F5F0AA001642A1 /* SearchTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTableViewCell.swift; sourceTree = "<group>"; };
 		1CD1EB9122F5AB1500954F25 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		1CE1B4B32316D9EF004EFFAA /* HashtagViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashtagViewController.swift; sourceTree = "<group>"; };
+		1CEFA3F72321213F0036AAB3 /* CommentInputAccessoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentInputAccessoryView.swift; sourceTree = "<group>"; };
+		1CEFA3FA232122400036AAB3 /* CommentInputTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentInputTextView.swift; sourceTree = "<group>"; };
 		1CF59EEE230D526C00D1E999 /* CommentTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentTableViewCell.swift; sourceTree = "<group>"; };
 		1CF59EF0230D5BC800D1E999 /* NotificationsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsTableViewCell.swift; sourceTree = "<group>"; };
 		1CF8FCA622F9872F0052D87E /* SearchTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SearchTableViewCell.xib; sourceTree = "<group>"; };
@@ -293,6 +297,7 @@
 				1CF59EF0230D5BC800D1E999 /* NotificationsTableViewCell.swift */,
 				1C17FD462313185C00CDFB60 /* Messages */,
 				1CBF8B24231879F300C8EA20 /* HashtagCollectionViewCell.swift */,
+				1CEFA3F9232122180036AAB3 /* Comment */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -333,6 +338,15 @@
 				1C753C0722FE858000AC6C35 /* HomeFeedCollectionViewCell.xib */,
 			);
 			path = HomeFeedCollCell;
+			sourceTree = "<group>";
+		};
+		1CEFA3F9232122180036AAB3 /* Comment */ = {
+			isa = PBXGroup;
+			children = (
+				1CEFA3F72321213F0036AAB3 /* CommentInputAccessoryView.swift */,
+				1CEFA3FA232122400036AAB3 /* CommentInputTextView.swift */,
+			);
+			path = Comment;
 			sourceTree = "<group>";
 		};
 		1CF8FCA522F986F70052D87E /* SearchTableCell */ = {
@@ -492,10 +506,12 @@
 				1C04207122F3258B00DF1C13 /* ProfileViewController.swift in Sources */,
 				1CF8FCA922F9C8E20052D87E /* SelectImageViewController.swift in Sources */,
 				1C04206B22F3255F00DF1C13 /* SearchViewController.swift in Sources */,
+				1CEFA3F82321213F0036AAB3 /* CommentInputAccessoryView.swift in Sources */,
 				1C7257B022F26C0600DECF8D /* Extensions.swift in Sources */,
 				1CE1B4B42316D9EF004EFFAA /* HashtagViewController.swift in Sources */,
 				1C7257B222F282E400DECF8D /* SignUpViewController.swift in Sources */,
 				1C04206F22F3257E00DF1C13 /* NotificationViewController.swift in Sources */,
+				1CEFA3FB232122400036AAB3 /* CommentInputTextView.swift in Sources */,
 				1CF59EEF230D526C00D1E999 /* CommentTableViewCell.swift in Sources */,
 				1C3CE0062309921F002ED809 /* CommentViewController.swift in Sources */,
 				1CD0670E22F5F0AA001642A1 /* SearchTableViewCell.swift in Sources */,

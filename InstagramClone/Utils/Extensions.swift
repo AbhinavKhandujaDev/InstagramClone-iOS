@@ -257,6 +257,13 @@ extension UITextField {
         self.borderStyle = .roundedRect
         self.font = UIFont.systemFont(ofSize: 14)
     }
+    
+    func addBottomBorder() {
+        self.layer.shadowColor = UIColor.lightGray.cgColor
+        self.layer.shadowOffset = CGSize(width: 0, height: 0.5)
+        self.layer.shadowRadius = 0
+        self.layer.shadowOpacity = 1
+    }
 }
 
 extension String {

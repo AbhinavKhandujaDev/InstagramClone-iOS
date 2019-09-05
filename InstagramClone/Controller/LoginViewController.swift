@@ -49,7 +49,7 @@ class LoginViewController: UIViewController {
         loginBtn.layer.cornerRadius = 5
         
         view.addSubview(dontHaveAccountBtn)
-        dontHaveAccountBtn.anchor(top: nil, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 50)
+        dontHaveAccountBtn.anchor(top: nil, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 15, paddingRight: 0, width: 0, height: 50)
         
         [emailTxtField, passwordTxtField].forEach { (field) in
             field!.addTarget(self, action: #selector(logInValidation), for: .editingChanged)
@@ -57,8 +57,10 @@ class LoginViewController: UIViewController {
         }
         
         disableLoginBtn = true
-        
-//        appDel.setRootVc(vc: nil, storyboard: "Main", vcIdentifier: "RootNavViewController")
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        view.endEditing(true)
     }
     
     @objc fileprivate func logInValidation() {

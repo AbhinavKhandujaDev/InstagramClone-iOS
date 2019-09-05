@@ -81,7 +81,7 @@ class ProfileViewController: UIViewController {
         }
     }
     
-    fileprivate func fetchCurrentUserData() {
+    func fetchCurrentUserData() {
         guard let currentUid = Auth.auth().currentUser?.uid else {return}
         usersRef.child(currentUid).observeSingleEvent(of: .value) { (snapshot) in
             let uid = snapshot.key
@@ -237,7 +237,9 @@ extension ProfileViewController: ProfileHeaderDelegate {
             })
         }else if header.editProfileBtn.titleLabel?.text == "Edit Profile" {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let vc = storyboard.instantiateViewController(withIdentifier: "EditProfileViewController")
+            let vc = storyboard.instantiateViewController(withIdentifier: "EditProfileViewController") as! EditProfileViewController
+            vc.user = header.user
+            vc.profileVC = self
             let navContriller = UINavigationController(rootViewController: vc)
             self.present(navContriller, animated: true, completion: nil)
         }
