@@ -49,6 +49,10 @@ class ChatViewController: UITableViewController {
         return true
     }
     
+    override func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        containerView.commentTextView.resignFirstResponder()
+    }
+    
     private func configureNavBar() {
         if let user = user {
             navigationItem.title = user.username

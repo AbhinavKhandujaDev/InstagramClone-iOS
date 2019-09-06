@@ -50,6 +50,10 @@ class CommentViewController: UITableViewController {
     override var canBecomeFirstResponder: Bool {
         return true
     }
+    
+    override func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        containerView.commentTextView.resignFirstResponder()
+    }
 
     private func fetchComments() {
         commentsRef.child(post.postId).observe(.childAdded) { (snapshot) in

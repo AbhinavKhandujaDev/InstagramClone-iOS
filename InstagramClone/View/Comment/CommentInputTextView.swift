@@ -27,6 +27,10 @@ class CommentInputTextView: UITextView {
         placeHolderLabel.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
     }
     
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
