@@ -29,6 +29,10 @@ class ChatViewController: UITableViewController {
         observeMessage()
     }
     
+    deinit {
+        print("ChatViewController deinit")
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tabBarController?.tabBar.isHidden = true
@@ -36,6 +40,7 @@ class ChatViewController: UITableViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        containerView.delegate = nil
         tabBarController?.tabBar.isHidden = false
     }
     
@@ -64,8 +69,8 @@ class ChatViewController: UITableViewController {
     }
     
     @objc private func handleInfoTapped() {
-        self.pushTo(vc: ProfileViewController.self, storyboard: "Main", beforeCompletion: { (vc) -> (Bool) in
-            vc.user = self.user
+        self.pushTo(vc: ProfileViewController.self, storyboard: "Main", beforeCompletion: {[weak self] (vc) -> (Bool) in
+            vc.user = self?.user
             return true
         }, completion: nil)
     }
@@ -74,18 +79,18 @@ class ChatViewController: UITableViewController {
         guard let currentUid = Auth.auth().currentUser?.uid else { return }
         guard let chatPartnerId = user?.uid else { return }
         
-        userMessagesRef.child(currentUid).child(chatPartnerId).observe(.childAdded) { (ss) in
+        userMessagesRef.child(currentUid).child(chatPartnerId).observe(.childAdded) {[weak self] (ss) in
             let messageId = ss.key
-            self.fetchMessage(messageId: messageId)
+            self?.fetchMessage(messageId: messageId)
         }
     }
     
     private func fetchMessage(messageId: String) {
-        messagesRef.child(messageId).observeSingleEvent(of: .value) { (ss) in
+        messagesRef.child(messageId).observeSingleEvent(of: .value) {[weak self] (ss) in
             guard let dict = ss.value as? [String:Any] else {return}
             let message = Message(dictionary: dict)
-            self.messages.append(message)
-            self.tableView.reloadData()
+            self?.messages.append(message)
+            self?.tableView.reloadData()
         }
     }
     

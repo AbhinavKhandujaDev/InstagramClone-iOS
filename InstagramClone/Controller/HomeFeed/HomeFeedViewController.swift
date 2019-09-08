@@ -52,20 +52,18 @@ class HomeFeedViewController: UICollectionViewController {
         }
         guard let currentUser = Auth.auth().currentUser?.uid else { return }
 
-        self.fetchPosts(databaseRef: userFeedRef.child(currentUser), currentKey: currentKey, initialCount: initialPostsCount, furtherCount: furtherPostsCount, lastPostId: { (first) in
-            self.collectionView.refreshControl?.endRefreshing()
-            self.currentKey = first.key
-        }) { (post) in
-            self.feeds.append(post)
-            self.feeds.sort(by: {$0.createdAt > $1.createdAt})
-            self.collectionView.reloadData()
+        self.fetchPosts(databaseRef: userFeedRef.child(currentUser), currentKey: currentKey, initialCount: initialPostsCount, furtherCount: furtherPostsCount, lastPostId: {[weak self] (first) in
+            self?.collectionView.refreshControl?.endRefreshing()
+            self?.currentKey = first.key
+        }) {[weak self] (post) in
+            self?.feeds.append(post)
+            self?.feeds.sort(by: {$0.createdAt > $1.createdAt})
+            self?.collectionView.reloadData()
         }
     }
 
     @IBAction func showMessagesTapped(_ sender: UIBarButtonItem) {
-        self.pushTo(vc: MessagesViewController.self, storyboard: "Main", beforeCompletion: { (vc) -> (Bool) in
-            return true
-        }, completion: nil)
+        self.pushTo(vc: MessagesViewController.self)
     }
 }
 
@@ -108,12 +106,8 @@ extension HomeFeedViewController : FeedCellDelegate {
     
     func handleUsernameTapped(for feedCell: HomeFeedCollectionViewCell) {
         self.pushTo(vc: ProfileViewController.self, storyboard: "Main", beforeCompletion: { (vc) -> (Bool) in
-            guard let uid = feedCell.post?.ownerUid else {return false}
-            usersRef.child(uid).observeSingleEvent(of: .value, with: { (ss) in
-                guard let ss = ss.value as? [String:AnyObject] else {return}
-                let user = User(uid: (feedCell.post?.ownerUid)!, details: ss)
-                vc.user = user
-            })
+            let user = feedCell.post?.user
+            vc.user = user
             return true
         }, completion: nil)
     }

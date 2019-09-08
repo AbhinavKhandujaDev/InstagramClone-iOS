@@ -20,7 +20,7 @@ class CommentInputTextView: UITextView {
     override init(frame: CGRect, textContainer: NSTextContainer?) {
         super.init(frame: frame, textContainer: textContainer)
         
-        NotificationCenter.default.addObserver(self, selector: #selector(handleInputTextDidChange), name: UITextView.textDidChangeNotification, object: nil)
+         NotificationCenter.default.addObserver(self, selector: #selector(handleInputTextDidChange), name: UITextView.textDidChangeNotification, object: nil)
         
         addSubview(placeHolderLabel)
         placeHolderLabel.anchor(top: nil, left: leftAnchor, bottom: nil, right: rightAnchor, paddingTop: 8, paddingLeft: 8, paddingBottom: 0, paddingRight: 0, width: 0, height: 0)
@@ -36,7 +36,7 @@ class CommentInputTextView: UITextView {
     }
     
     @objc private func handleInputTextDidChange() {
-        placeHolderLabel.isHidden = !self.text.isEmpty
+        placeHolderLabel.isHidden = (!self.text.isEmpty || self.text == nil)
     }
     
 }

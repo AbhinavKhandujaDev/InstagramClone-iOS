@@ -17,6 +17,7 @@ class ProfileViewController: UIViewController {
     @IBOutlet weak var profileCollView: UICollectionView!
     
     var user : User?
+    
     var posts = [Post]()
     
     fileprivate var horizontalSpace : CGFloat = 1
@@ -47,10 +48,23 @@ class ProfileViewController: UIViewController {
         configureRefreshController()
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        let header = profileCollView.visibleSupplementaryViews(ofKind: UICollectionView.elementKindSectionHeader).first as? ProfileHeaderCell
+        header?.delegate = nil
+    }
+    
+    deinit {
+        print("ProfileViewController deinit")
+    }
+    
     fileprivate func configureNavBar() {
         self.navigationItem.title = "Home Feed"
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: #imageLiteral(resourceName: "send2"), style: .plain, target: self, action: nil)
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(logout))
+        
+        if user == nil {
+            self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(logout))
+        }
     }
     
     @objc fileprivate func logout() {
@@ -71,24 +85,24 @@ class ProfileViewController: UIViewController {
     }
     
     fileprivate func fetchPosts(uid: String = (Auth.auth().currentUser?.uid)!) {
-        self.fetchPosts(databaseRef: userPostsRef.child(uid), currentKey: currentKey, initialCount: initialPostsCount, furtherCount: furtherPostsCount, lastPostId: { (first) in
-            self.profileCollView.refreshControl?.endRefreshing()
-            self.currentKey = first.key
-        }) { (post) in
-            self.posts.append(post)
-            self.posts.sort(by: {$0.createdAt > $1.createdAt})
-            self.profileCollView.reloadData()
+        self.fetchPosts(databaseRef: userPostsRef.child(uid), currentKey: currentKey, initialCount: initialPostsCount, furtherCount: furtherPostsCount, lastPostId: { [weak self] (first) in
+            self?.profileCollView.refreshControl?.endRefreshing()
+            self?.currentKey = first.key
+        }) { [weak self] (post) in
+            self?.posts.append(post)
+            self?.posts.sort(by: {$0.createdAt > $1.createdAt})
+            self?.profileCollView.reloadData()
         }
     }
     
     func fetchCurrentUserData() {
         guard let currentUid = Auth.auth().currentUser?.uid else {return}
-        usersRef.child(currentUid).observeSingleEvent(of: .value) { (snapshot) in
+        usersRef.child(currentUid).observeSingleEvent(of: .value) { [weak self] (snapshot) in
             let uid = snapshot.key
             guard let details = snapshot.value as? [String:AnyObject] else {return}
-            self.user = User(uid: uid, details: details)
-            self.navigationItem.title = self.user?.username
-            self.profileCollView.reloadData()
+            self?.user = User(uid: uid, details: details)
+            self?.navigationItem.title = self?.user?.username
+            self?.profileCollView.reloadData()
         }
     }
     
@@ -147,9 +161,9 @@ extension ProfileViewController: UICollectionViewDelegate, UICollectionViewDataS
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        self.pushTo(vc: HomeFeedViewController.self, storyboard: "Main", beforeCompletion: { (vc) -> (Bool) in
+        self.pushTo(vc: HomeFeedViewController.self, storyboard: "Main", beforeCompletion: {[weak self] (vc) -> (Bool) in
             vc.profileVC = self
-            vc.post = self.posts[indexPath.row]
+            vc.post = self?.posts[indexPath.row]
             vc.viewSinglePost = true
             return true
         }, completion: nil)
@@ -183,17 +197,17 @@ extension ProfileViewController: UICollectionViewDelegate, UICollectionViewDataS
 extension ProfileViewController: ProfileHeaderDelegate {
     
     func handleFollowersTapped(for header: ProfileHeaderCell) {
-        self.pushTo(vc: FollowViewController.self, storyboard: "Main", beforeCompletion: { (vc) -> (Bool) in
+        self.pushTo(vc: FollowViewController.self, storyboard: "Main", beforeCompletion: { [weak self] (vc) -> (Bool) in
             vc.viewingMode = FollowViewController.ViewingMode(index: 1)
-            vc.uid = self.user?.uid
+            vc.uid = self?.user?.uid
             return true
         }, completion: nil)
     }
     
     func handleFollowingTapped(for header: ProfileHeaderCell) {
-        self.pushTo(vc: FollowViewController.self, storyboard: "Main", beforeCompletion: { (vc) -> (Bool) in
+        self.pushTo(vc: FollowViewController.self, storyboard: "Main", beforeCompletion: { [weak self] (vc) -> (Bool) in
             vc.viewingMode = FollowViewController.ViewingMode(index: 0)
-            vc.uid = self.user?.uid
+            vc.uid = self?.user?.uid
             return true
         }, completion: nil)
     }

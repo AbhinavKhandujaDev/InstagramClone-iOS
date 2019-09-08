@@ -96,29 +96,29 @@ class PostViewController: UIViewController, UITextViewDelegate {
             }
             
             guard let path = metadata?.path else{return}
-            storageRef.child(path).downloadURL(completion: { (picUrl, urlError) in
+            storageRef.child(path).downloadURL(completion: {[weak self] (picUrl, urlError) in
                 if urlError != nil {
                     print("error in getting image url: ",urlError as Any)
                     return
                 }
                 guard let url = picUrl?.absoluteString else{return}
                 
-                guard let captionText = self.captionTextView.text else {return}
+                guard let captionText = self?.captionTextView.text else {return}
                 
                 let values = ["caption": captionText, "createdAt": creationDate, "likes" : 0, "imageUrl": url, "uid" : uid] as [String : Any]
                 
                 let postId = postsRef.childByAutoId()
                 
                 postId.updateChildValues(values, withCompletionBlock: { (error, ref) in
-                    self.uploadHashtagToServer(withId: postId.key!)
+                    self?.uploadHashtagToServer(withId: postId.key!)
                     
                     if captionText.contains("@") {
-                        self.uploadMentionedNotification(postId: postId.key!, text: captionText, isCommentMention: false)
+                        self?.uploadMentionedNotification(postId: postId.key!, text: captionText, isCommentMention: false)
                     }
                     
                     userPostsRef.child(uid).updateChildValues([postId.key! : 1])
-                    self.updateUserFeeds(with: postId.key!)
-                    self.navigationController?.dismiss(animated: true, completion: nil)
+                    self?.updateUserFeeds(with: postId.key!)
+                    self?.navigationController?.dismiss(animated: true, completion: nil)
                 })
             })
         }
@@ -128,9 +128,9 @@ class PostViewController: UIViewController, UITextViewDelegate {
         guard let text = captionTextView.text else { return }
         guard let post = postToEdit else { return }
         uploadHashtagToServer(withId: post.postId)
-        postsRef.child(post.postId).child("caption").setValue(text) { (error, ref) in
+        postsRef.child(post.postId).child("caption").setValue(text) {[weak self] (error, ref) in
             if error == nil {
-                self.navigationController?.popViewController(animated: true)
+                self?.navigationController?.popViewController(animated: true)
             }
         }
     }

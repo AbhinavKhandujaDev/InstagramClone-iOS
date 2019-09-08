@@ -36,13 +36,17 @@ class SelectImageViewController: UIViewController {
         fetchPhotos()
     }
     
+    deinit {
+        print("SelectImageViewController deinit")
+    }
+    
     fileprivate func configureNavigationButtons() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(self.handleCancel))
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Next", style: .plain, target: self, action: #selector(self.handlePost))
     }
     
     fileprivate func fetchPhotos() {
-        
+        print("running fetch photos")
         let allPhotos = PHAsset.fetchAssets(with: .image, options: getAssetFetchOptions())
         
         DispatchQueue.global(qos: .background).async {
@@ -52,17 +56,17 @@ class SelectImageViewController: UIViewController {
                 let options = PHImageRequestOptions()
                 options.isSynchronous = true //fetches images in order
                 
-                imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: options, resultHandler: { (image, info) in
+                imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: options, resultHandler: {[weak self] (image, info) in
                     if let image = image {
-                        self.images.append(image)
-                        self.assets.append(asset)
-                        if self.selectedImage == nil {
-                            self.selectedImage = image
+                        self?.images.append(image)
+                        self?.assets.append(asset)
+                        if self?.selectedImage == nil {
+                            self?.selectedImage = image
                         }
                         
                         if count == allPhotos.count - 1 {
                             DispatchQueue.main.async {
-                                self.selectImageCollView.reloadData()
+                                self?.selectImageCollView.reloadData()
                             }
                         }
                     }
@@ -81,8 +85,8 @@ class SelectImageViewController: UIViewController {
     }
     
     @objc fileprivate func handlePost() {
-        self.pushTo(vc: PostViewController.self, storyboard: "Main", beforeCompletion: { (vc) -> (Bool) in
-            vc.image = self.header?.imgView.image
+        self.pushTo(vc: PostViewController.self, storyboard: "Main", beforeCompletion: {[weak self] (vc) -> (Bool) in
+            vc.image = self?.header?.imgView.image
             return true
         }, completion: nil)
     }

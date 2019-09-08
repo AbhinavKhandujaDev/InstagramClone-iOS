@@ -28,6 +28,10 @@ class MessagesViewController: UITableViewController {
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(self.handleNewMessage))
     }
     
+    deinit {
+        print("MessagesViewController deinit")
+    }
+    
     @objc private func handleNewMessage() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let controller = storyboard.instantiateViewController(withIdentifier: "NewMessageTableViewController") as! NewMessageTableViewController
@@ -41,26 +45,27 @@ class MessagesViewController: UITableViewController {
         self.messages.removeAll()
         self.messagesDict.removeAll()
         self.tableView.reloadData()
-        userMessagesRef.child(currUser).observe(.childAdded) { (ss) in
+        userMessagesRef.child(currUser).observe(.childAdded) {[weak self] (ss) in
             let uid = ss.key
             userMessagesRef.child(currUser).child(uid).observe(.childAdded, with: { (childSS) in
                 let msgId = childSS.key
-                self.fetchMessage(messageId: msgId)
+                self?.fetchMessage(messageId: msgId)
             })
         }
     }
     
     private func fetchMessage(messageId: String) {
-        messagesRef.child(messageId).observeSingleEvent(of: .value) { (ss) in
+        messagesRef.child(messageId).observeSingleEvent(of: .value) {[weak self] (ss) in
             guard let dict = ss.value as? [String:Any] else {return}
             let message = Message(dictionary: dict)
             
             let partnerId = message.getChatPartnerId()
-            self.messagesDict[partnerId] = message
+            self?.messagesDict[partnerId] = message
             
-            self.messages = Array(self.messagesDict.values)
+            guard let values = self?.messagesDict.values else {return}
+            self?.messages = Array(values)
             
-            self.tableView.reloadData()
+            self?.tableView.reloadData()
         }
     }
     
@@ -89,8 +94,8 @@ extension MessagesViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         let partnerId = messages[indexPath.row].getChatPartnerId()
-        dbRef.fetchUser(uid: partnerId) { (user) in
-            self.showChatController(forUser: user)
+        dbRef.fetchUser(uid: partnerId) {[weak self] (user) in
+            self?.showChatController(forUser: user)
         }
     }
     
